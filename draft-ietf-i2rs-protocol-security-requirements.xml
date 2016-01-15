@@ -1,0 +1,370 @@
+﻿<?xml version="1.0" encoding="us-ascii"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [ 
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC4107 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4107.xml">
+<!ENTITY RFC4949 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4949.xml">
+<!ENTITY RFC4960 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4960.xml">
+<!ENTITY I-D.ietf-i2rs-problem SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-problem-statement.xml">
+<!ENTITY I-D.ietf-i2rs-architecture SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-architecture.xml">
+<!ENTITY I-D.ietf-i2rs-pub-sub-requirements SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-pub-sub-requirements.xml">
+<!ENTITY I-D.ietf-i2rs-traceability SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-traceability.xml">
+<!ENTITY I-D.haas-i2rs-ephemeral-state-reqs SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.haas-i2rs-ephemeral-state-reqs.xml">
+
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+ <?rfc toc="yes" ?>
+ <?rfc symrefs="yes" ?>
+ <?rfc sortrefs="yes"?> 
+ <?rfc compact="yes" ?>
+ <?rfc subcompact="no" ?>  
+ <?rfc iprnotified="no" ?>
+  <?rfc strict="no" ?>
+
+<rfc category="std" docName="draft-ietf-i2rs-protocol-security-requirements-02"  ipr="trust200902">
+<front>   
+<title abbrev="I2RS Security Requirements">I2RS Security Related Requirements</title>
+     <author fullname="Susan Hares" initials="S" surname="Hares">
+      <organization>Huawei</organization>
+      <address>
+        <postal>
+          <street>7453 Hickory Hill</street>
+          <city>Saline</city>
+          <region>MI</region>
+          <code>48176</code>
+          <country>USA</country>
+        </postal>
+        <email>shares@ndzh.com</email>
+        <!-- uri and facsimile elements may also be added -->
+      </address>
+    </author>
+	<author fullname="Daniel Migault" initials="D" surname="Migault">
+      <organization>Ericsson</organization>
+      <address>
+        <postal>
+          <street>8400 boulevard Decarie</street>
+          <city>Montreal</city>
+          <region>QC</region>
+          <code>HAP 2N2</code>
+          <country>Canada</country>
+        </postal>
+        <email>daniel.migault@ericsson.com</email>
+        <!-- uri and facsimile elements may also be added -->
+      </address>
+    </author>
+	<author fullname="Joel Halpern" initials="J" surname="Halpern">
+      <organization>Ericsson</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city></city>
+          <region></region>
+          <code></code>
+          <country>US</country>
+        </postal>
+        <email>joel.halpern@ericsson.com</email>
+        <!-- uri and facsimile elements may also be added -->
+      </address>
+    </author>
+    <date year="2015" />
+   <area>Routing Area</area>
+   <workgroup>I2RS working group</workgroup>
+    <keyword>RFC</keyword>
+     <keyword>Request for Comments</keyword>
+     <keyword>I-D</keyword>
+     <keyword>Internet-Draft</keyword>
+     <keyword>I2RS</keyword>
+
+<abstract>
+   <t> This presents security-related requirements for the I2RS
+   protocol for mutual authentication, transport protocols, 
+   data transfer and transactions. 
+   </t>
+</abstract>
+</front>
+<middle>
+<section anchor="intro" title="Introduction">
+   <t>The Interface to the Routing System (I2RS)  
+   provides read and write access to information and state within the
+    routing process. The I2RS client
+	interacts with one or more I2RS agents to collect information
+    from network routing systems. </t>
+	<t> This document describes the requirements for the
+	I2RS protocol in the security-related areas of mutual authentication of the 
+	I2RS client and agent, the transport protocol carrying the I2RS 
+	protocol messages, and the atomicity of the transactions. 
+    These requirements align with the description of the I2RS architecture found in
+	<xref target="I-D.ietf-i2rs-architecture"></xref> document which solves the problem
+	described in <xref target="I-D.ietf-i2rs-problem-statement"></xref>.</t>
+	<t>
+	  <xref target="I-D.haas-i2rs-ephemeral-state-reqs"></xref> discusses I2RS roles-based write 
+	  conflict resolution in the ephemeral data store using the I2RS Client Identity, I2RS Secondary Identity 
+	  and priority. The draft <xref target="I-D.ietf-i2rs-traceability"></xref> describes the traceability
+	  framework and its requirements for I2RS.  The draft <xref target="I-D.ietf-i2rs-pub-sub-requirements"></xref>
+	  describes the requirements for I2RS to be able to publish information or have a remote client subscribe to an 
+	  information data stream.  
+	  </t> 
+
+      <section title="Requirements Language">
+        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+        document are to be interpreted as described in <xref
+        target="RFC2119">RFC 2119</xref>.</t>
+      </section>
+
+<section title="Definitions" >
+   <t>This document utilizes the definitions found in the
+   following drafts:  <xref target="RFC4949"></xref>, and <xref target="I-D.ietf-i2rs-architecture"></xref>
+   </t> 
+  <t> Specifically, this document utilizes the following definitions:
+  <list style="hanging">
+    <t hangText="access control"><vspace blankLines="1"/> <xref target="RFC4949" /> defines 
+	access control as the following:
+	<list> 
+	<t>1)(I))protection of system resources against unauthorized use; 
+	</t>
+	<t>2)(I)process by which use of system resources is regulated according to a security 
+	policy and is permitted only by authorized entities (users, programs, processes, or other systems) according
+      to that policy; </t>
+	<t>3)(I) (formal model) Limitations on interactions between subjects and objects in an information system;  
+	</t> 
+	<t>4)(O) "The prevention of unauthorized use of a resource, including the prevention of use of a resource in an unauthorized
+      manner."; </t>
+	<t> 5.(O) /U.S. Government/ A system using physical, electronic, or
+      human controls to identify or admit personnel with properly authorized access to a SCIF.</t>
+	  </list> </t>
+	<t hangText="Authentication"><vspace blankLines="1"/>  <xref target="RFC4949" />
+	 describes authentication as the process of verifying (i.e., establishing the truth of) 
+	 an attribute value claimed by or for a system entity or system resource. Authentication
+     has two steps: identify and verify. </t>
+	<t hangText="Data Confidentiality"><vspace blankLines="1"/>  <xref target="RFC4949" />
+	describes data confidentiality as having two properties: a) data is not disclosed to
+	system entities unless they have been authorized to know, and b) data is not
+	disclosed to unauthorized individuals, entities or processes.  The key point is that
+	confidentiality implies that the originator has the ability to authorize where the 
+	information goes.  Confidentiality is important for both read and write scope of the 
+	data.</t>
+	<t hangText="Data Integrity"><vspace blankLines="1"/> <xref target="RFC4949" />
+      states data integrity includes 
+	  <list>
+	  <t>1. (I)The property that data has not been changed, destroyed, or </t>
+	  <t>2. (O) "The property that information has not been modified or
+      destroyed in an unauthorized manner." </t>
+	  </list>
+	  </t> 
+	<t hangText="Data Privacy"><vspace blankLines="1"/> <xref target="RFC4949" /> describes
+	data privacy as a synonym for data confidentiality. This I2RS document will utilize
+	data privacy as a synonym for data confidentiality. </t> 
+	<t hangText="Mutual Authentication"><vspace blankLines="1"/><xref target="RFC4949" />
+	 implies that mutual authentication exists between two interacting system
+	 entities.  Mutual authentication in I2RS implies that both sides move from
+	 a state of mutual suspicion to mutually authenticated communication after
+	 each system has been identified and validated by its peer system.</t>
+	<t hangText="role"><vspace blankLines="1"/> <xref target="RFC4949" /> describes role as: 
+     <list>
+	 <t>1) (I) A job function or employment position to which people or
+      other system entities may be assigned in a system. (See: role-
+      based access control. Compare: duty, billet, principal, user.)
+	</t>
+	<t>2) (O) /Common Criteria/ A pre-defined set of rules establishing
+      the allowed interactions between a user and the TOE.
+	  </t> 
+	</list> 
+	The I2RS uses the common criteria definition. 
+	</t> 
+	<t hangText="role"><vspace blankLines="1"/> <xref target="RFC4949" /> describes role-based 
+     access control	as: (I) A form of identity-based access control wherein the system
+      entities that are identified and controlled are functional
+      positions in an organization or process. 
+	  </t> 
+	<t hangText="Security audit trail"><vspace blankLines="1"/><xref target="RFC4949" /> (page 254) describes
+	a security audit trail as a chronological record of system activities that is sufficient
+      to enable the reconstruction and examination of the sequence
+      environments and activities surrounding or leading to an
+      operation, procedure, or event in a security-relevant transaction
+      from inception to final results. Requirements to support a security audit is
+      not covered in this document.  
+	  The draft <xref target="I-D.ietf-i2rs-traceability"></xref> describes traceability for I2RS interface and 
+	   protocol. Traceability is not equivalent to a security audit trail. </t>
+	</list>
+	</t>
+	<t>I2RS the following phrase that incorporates an <xref target="RFC4949"/> definition:
+	<list style="hanging">
+	  <t hangText="I2RS protocol data integrity"><vspace blankLines="1" /> The transfer of data via the 
+	  I2RS protocol has the property of data integrity described in <xref target="RFC4949"/>.</t>
+	</list>  
+	</t>
+</section>
+</section>
+<section title="Security-Related Requirements" >
+<t> The security for the I2RS protocol requires mutually authenticated I2RS clients and I2RS agents.
+The I2RS client and I2RS agent using the I2RS protocol MUST be able to exchange 
+data over a secure transport, but some functions may operate on non-secure
+transport. The I2RS protocol MUST BE able to provide atomicity of a transaction, but it is 
+not required to have multi-message atomicity and roll-back mechanism transactions.  Multiple messages
+transactions may be impacted by the interdependency of data. This section discusses these 
+details of these security requirements. 
+</t> 
+<section title="Mutual authentication of I2RS client and I2RS Agent ">  
+<t>The I2RS architecture <xref target="I-D.ietf-i2rs-architecture"></xref>
+sets the following requirements:  
+<list style="symbols">
+<t>SEC-REQ-01: All I2RS clients and I2RS agents MUST have at least one unique identifier that uniquely identifies
+each party. </t>
+<t>SEC-REQ-02: The I2RS protocol MUST utilize these identifiers for mutual identification of
+the I2RS client and I2RS agent. </t>
+<t>SEC-REQ-03:An I2RS agent, upon receiving an I2RS message from a
+I2RS client, MUST confirm that the I2RS client has a valid identifier. </t>
+<t>SEC-REQ-04: The I2RS client, upon receiving an I2RS message from an
+I2RS agent, MUST confirm the I2RS agent has a valid identifier . </t>
+ <t>SEC-REQ-05: Identifier distribution and the loading of these identifiers into I2RS agent
+ and I2RS Client SHOULD occur outside the I2RS protocol. </t>
+ <t>SEC-REQ-06: The I2RS protocol SHOULD assume some mechanism (IETF or private) will
+ distribute or load identifiers so that the I2RS client/agent has these
+ identifiers prior to the I2RS protocol establishing a connection 
+ between I2RS client and I2RS agent. </t>
+<t> SEC-REQ-07: Each Identifier MUST be linked to one priority </t>
+<t> SEC-REQ-08: Each Identifier is associated with one secondary identifier during a particular read/write
+sequence, but the secondary identifier may vary during the time a connection
+between the I2RS client and I2RS agent is active. The variance of the
+secondary identifier allows the I2RS client to be associated with multiple
+applications and pass along an identifier for these applications in the 
+secondary identifier.   </t>
+</list>
+</t>
+</section> 
+<section title="Transport Requirements Based on Mutual Authentication" >
+<t>SEC-REQ-09: The I2RS protocol MUST be able to transfer data over a
+   secure transport and optionally MAY be able to transfer data over a
+   non-secure transport.  A secure transport MUST provide data
+   confidentiality, data integrity, and replay prevention.
+</t> 
+<t>
+Note:The non-secure transport can be used for publishing telemetry data that was specifically indicated to
+non-confidential in the data model. The configuration of ephemeral data in the I2RS Agent by the 
+I2RS client SHOULD be done over a secure transport. It is anticipated that the passing of most I2RS 
+ephemeral state operational status SHOULD be done over a secure transport.  
+Data models SHOULD clearly annotate what data nodes can be passed over an insecure connection.
+The default transport is a secure transport. 
+</t>
+<t>
+SEC-REQ-10: A secure transport MUST be associated with a key management 
+solution that can guarantee that only the entities having sufficient privileges 
+can get the keys to encrypt/decrypt the sensitive data.  
+Per <xref target="RFC4107">BCP107</xref> this key management system SHOULD be automatic, 
+but MAY BE manual if the following constraints from BCP107:
+<list>
+<t>a)environment has limited bandwidth or high round-trip times, </t>  
+<t>b)the information being protected has a low value and </t>
+<t> c)the total volume over the entire lifetime of the long-term session key will be very low, </t>
+<t> d)the scale of the deployment is limited. </t>
+</list>
+</t>
+<t>
+Most I2RS environments (I2RS Client - I2S Agents) will not have the environment
+described by <xref target="RFC4107">BCP107</xref> but a few I2RS use cases 
+required limited non-secure light-weight telemetry messages
+that have these requirements.  An I2RS data model must indicate which portions can be
+served by manual key management. 
+</t>
+<t> SEC-REQ-11: The I2RS protocol MUST be able to support multiple secure transport
+sessions providing protocol and data communication between an I2RS Agent
+and an I2RS client.  However, a single I2RS Agent to I2RS client connection MAY
+elect to use a single secure transport session or a single 
+non-secure transport session. </t>
+<t>SEC-REQ-12: The I2RS Client and I2RS Agent protocol SHOULD implement
+mechanisms that mitigate DoS attacks </t>  
+</section>
+<section title="Data Confidentiality Requirements"> 
+<t>SEC-REQ-13: In a critical infrastructure, certain data within routing elements is
+sensitive and read/write operations on such data MUST be controlled in order to protect 
+its confidentiality.  For example, most carriers do not want a router's 
+configuration and data flow statistics known by hackers or their competitors.  
+While carriers may share peering information, most carriers do not share 
+configuration and traffic statistics. To achieve this, access control to sensitive
+data needs to be provided, and the confidentiality protection on
+ such data during transportation needs to be enforced. </t>
+</section>
+<section title="Data Integrity Requirements">
+<t> SEC-REQ-14: An integrity protection mechanism for I2RS SHOULD be able to ensure the following: 
+1) the data being  protected is not modified without detection during 
+its transportation and 2) the data is actually from where it is expected
+to come from 3) the data is not repeated from some earlier interaction of the protocol.
+That is, when both confidentiality and integrity of data is properly protected, it 
+is possible to ensure that encrypted data is not modified
+or replayed without detection. </t>
+<t>SEC-REQ-15: The integrity that the message data is not repeated
+means that I2RS client to I2RS agent transport SHOULD protect against replay attack </t>
+<t>Requirements SEC-REQ-13 and SEC-REQ-14 are SHOULD requirements only because it is recognized
+that some I2RS Client to I2RS agent communication occurs over a non-secure channel. 
+The I2RS client to I2RS agent over a secure channel would implement these features. 
+In order to provide some traceability or notification for the non-secure protocol,
+SEC-REQ-16 suggests traceability and notification are important to include for
+any non-secure protocol.</t>
+<t>SEC-REQ-16: The I2RS message traceability and notification requirements 
+requirements found in <xref target="I-D.ietf-i2rs-traceability"></xref> and
+<xref target="I-D.ietf-i2rs-pub-sub-requirements"></xref> SHOULD be supported 
+in communication channel that is non-secure to trace or notify about potential
+security issues </t>
+</section>
+ <section title="Role-Based Data Model Security">
+ <t>The <xref target="I-D.ietf-i2rs-architecture"></xref> defines a 
+role or security role as specifying read, write, or notification access by a I2RS client to
+data within an agent's data model.  
+</t>
+<t> SEC-REQ-17: The rules around what role is permitted to access and manipulate what 
+information plus a secure transport (which protects the data in transit)  
+SHOULD ensure that data of any level of sensitivity is 
+reasonably protected from being observed by those without permission 
+to view it, so that privacy requirements are met.
+</t>
+ <t> SEC-REQ-18: Role security MUST work when multiple transport connections are being used
+ between the I2RS client and I2RS agent as the <xref target="I-D.ietf-i2rs-architecture">I2RS architecture</xref> states. 
+ These transport message streams may start/stop without affecting the existence of the client/agent
+ data exchange.  TCP supports a single stream of data. SCTP <xref target="RFC4960" /> provides
+ security for multiple streams plus end-to-end transport of data. 
+ </t> 
+<t> SEC-REQ-19: I2RS clients MAY be used by multiple applications to configure routing 
+ via I2RS agents, receive status reports, turn on the I2RS audit stream, or turn 
+ on I2RS traceability.  Application software using I2RS client functions
+ may host several multiple secure identities, but each connection will use
+ only one identifier with one priority.  Therefore, the security of each 
+ I2RS Client to I2RS Agent connection is unique. 
+ </t>
+ <t> Please note the security of the application to 
+ I2RS client connection is outside of the I2RS protocol or I2RS interface. 
+  </t>  
+</section> 
+</section>
+ 
+<section anchor="Acks" title="Acknowledgement">
+<t>The author would like to thank Wes George, Ahmed Abro, Qin Wu, Eric Yu, 
+Joel Halpern, Scott Brim, Nancy Cam-Winget, DaCheng Zhang, Alia Atlas, and Jeff Haas for their
+contributions to the I2RS security requirements discussion and this document.</t>
+</section>
+<section anchor="IANA" title="IANA Considerations">
+<t>This draft includes no request to IANA.</t>
+</section>
+
+ <section title="Security Considerations">
+<t>This is a document about security requirements for the I2RS protocol and
+data modules.  The whole document is security considerations. </t>
+</section>
+  
+</middle>  
+<back>
+<references title="Normative References">
+   &RFC2119;
+   &RFC4107;
+   &I-D.ietf-i2rs-architecture;
+</references>
+<references title="Informative References">
+   &RFC4949;
+   &RFC4960;
+   &I-D.ietf-i2rs-problem;
+   &I-D.haas-i2rs-ephemeral-state-reqs;
+   &I-D.ietf-i2rs-traceability;
+   &I-D.ietf-i2rs-pub-sub-requirements; 
+   </references>
+  
+</back>
+</rfc>
