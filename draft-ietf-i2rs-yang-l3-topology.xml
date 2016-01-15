@@ -1,0 +1,1760 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?rfc toc="yes"?>
+<?rfc rfcedstyle="yes"?>
+<?rfc subcompact="no" ?>
+<?rfc symrefs="yes"?>
+<rfc category="std" docName="draft-ietf-i2rs-yang-l3-topology-01.txt"
+     ipr="pre5378Trust200902">
+  <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+
+  <?rfc toc="yes" ?>
+
+  <?rfc compact="yes" ?>
+
+  <?rfc symrefs="yes" ?>
+
+  <?rfc sortrefs="yes"?>
+
+  <?rfc iprnotified="no" ?>
+
+  <?rfc strict="yes" ?>
+
+  <front>
+    <title abbrev="draft-ietf-i2rs-yang-l3-topology-01.txt">A YANG Data Model for
+    Layer 3 Topologies</title>
+
+    <author fullname="Alexander Clemm" initials="A." surname="Clemm">
+      <organization>Cisco</organization>
+
+      <address>
+        <email>alex@cisco.com</email>
+      </address>
+    </author>
+
+    <author fullname="Jan Medved" initials="J." surname="Medved">
+      <organization>Cisco</organization>
+
+      <address>
+        <email>jmedved@cisco.com</email>
+      </address>
+    </author>
+
+    <author fullname="Robert Varga" initials="R." surname="Varga">
+      <organization>Pantheon Technologies SRO</organization>
+
+      <address>
+        <email>robert.varga@pantheon.sk</email>
+      </address>
+    </author>
+
+    <author fullname="Tony Tkacik" initials="T." surname="Tkacik">
+      <organization>Pantheon Technologies SRO</organization>
+
+      <address>
+        <email>tony.tkacik@pantheon.sk</email>
+      </address>
+    </author>
+
+    <author fullname="Xufeng Liu" initials="X." surname="Liu">
+      <organization>Ericsson</organization>
+
+      <address>
+        <email>xufeng.liu@ericsson.com</email>
+      </address>
+    </author>
+
+    <author fullname="Igor Bryskin" initials="I." surname="Bryskin">
+      <organization>Huawei</organization>
+
+      <address>
+        <email>Igor.Bryskin@huawei.com</email>
+      </address>
+    </author>
+
+    <author fullname="Aihua Guo" initials="A." surname="Guo">
+      <organization>Adva Optical</organization>
+
+      <address>
+        <email>aguo@advaoptical.com</email>
+      </address>
+    </author>
+
+    <author fullname="Hariharan Ananthakrishnan" initials="H."
+            surname="Ananthakrishnan">
+      <organization>Packet Design</organization>
+
+      <address>
+        <email>hari@packetdesign.com</email>
+      </address>
+    </author>
+
+    <author fullname="Nitin Bahadur" initials="N." surname="Bahadur">
+      <organization>Bracket Computing</organization>
+
+      <address>
+        <email>nitin_bahadur@yahoo.com</email>
+      </address>
+    </author>
+
+    <author fullname="Vishnu Pavan Beeram" initials="V." surname="Beeram">
+      <organization>Juniper Networks</organization>
+
+      <address>
+        <email>vbeeram@juniper.net</email>
+      </address>
+    </author>
+
+    <date day="11" month="December" year="2015"/>
+
+    <abstract>
+      <t>This document defines a YANG data model for layer 3 network
+      topologies.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section title="Introduction">
+      <t>This document introduces a YANG <xref target="RFC6020"/> <xref
+      target="RFC6991"/> <xref target="I-D.draft-ietf-netmod-rfc6020bis-09"/> 
+      data model for Layer 3 network topologies. The model
+      allows an application to have a holistic view of the topology of a Layer
+      3 network, all contained in a single conceptual YANG datastore. The data
+      model builds on top of, and augments, the data model for network
+      topologies defined in 
+      <xref target="I-D.draft-ietf-i2rs-yang-network-topo"/>. An earlier revision
+      of that Internet Draft contained not just the general model for network
+      topologies, but also the model for layer 3 network topologies that is
+      being specified here. However, we decided to "split" the earlier draft
+      to separate the truly general aspects of a topology data model, which
+      apply to any type of topology, from the application of this model to a
+      particular domain, here: a Layer 3 network.</t>
+
+      <t>Specific topology types that are covered in this document include
+      Layer 3 Unicast IGP, IS-IS <xref target="RFC1195"/>, and OSPF <xref
+      target="RFC2178"/>. In addition, this documents defines a set of traffic
+      engineering extensions.</t>
+
+      <t>There are multiple applications for such a data model and a number of 
+      use cases have been defined in section 6 of
+      <xref target="I-D.draft-ietf-i2rs-usecase-reqs-summary"/>.
+      For example,
+      nodes within the network can use the data model to capture their
+      understanding of the overall network topology and expose it to a network
+      controller. A network controller can then use the instantiated topology
+      data to compare and reconcile its own view of the network topology with
+      that of the network elements that it controls. Alternatively, nodes
+      within the network could propagate this understanding to compare and
+      reconcile this understanding either amongst themselves or with help of a
+      controller. Beyond the network element itself, a network controller
+      might even use the data model to represent its view of the topology that
+      it controls and expose it to applications north of itself.
+      </t>
+      <t>There are several reasons to choose YANG to define the data model.
+      Data defined using YANG can be exposed by a server to client
+      applications and controllers via Netconf <xref target="RFC6241"/> or via
+      a ReST-like Interface <xref target="I-D.draft-ietf-netconf-restconf"/> 
+      <xref target="I-D.draft-ietf-netmod-yang-json"/>.
+      The fact that it can be used with different protocols and interfaces
+      provides for a degree of "future-proofing" of model implementations.
+      Also, YANG can serve as the basis for model-driven toolchains, such as
+      used in the Open Daylight project.</t>
+
+      <t>The data model is defined in several YANG modules: <list
+          style="symbols">
+          <t>Module "ietf-l3-unicast-igp-topology" defines a model for Layer 3
+          Unicast IGP topologies. To do so, it augments general network
+          topology model defined in 
+          <xref target="I-D.draft-ietf-i2rs-yang-network-topo"/> with
+          information specific to Layer 3 Unicast IGP. In doing so, it also
+          illustrates the extension patterns associated with extending
+          respectively augmenting the general topology model to meet the needs
+          of a specific topology.</t>
+
+          <t>Module "ietf-ospf-topology" defines a topology model for OSPF,
+          building on and extending the Layer 3 Unicast IGP topology model. It
+          serves as an example of how the general topology model can be
+          refined across multiple levels.</t>
+
+          <t>Module "ietf-isis-topology" defines a topology model for IS-IS, again
+          building on and extending the Layer 3 Unicast IGP topology
+          model.</t>
+        </list></t>
+        <t>
+        Information that is kept in the Traffic Engineering Database (TED) is 
+        specified in a separate model and outside the scope of this 
+        specification.</t>
+    </section>
+
+    <section title="Definitions and Acronyms">
+      <t>Datastore: A conceptual store of instantiated management information,
+      with individual data items represented by data nodes which are arranged
+      in hierarchical manner.</t>
+
+      <t>Data subtree: An instantiated data node and the data nodes that are
+      hierarchically contained within it.</t>
+
+      <t>HTTP: Hyper-Text Transfer Protocol</t>
+
+      <t>IGP: Interior Gateway Protocol</t>
+
+      <t>IS-IS: Intermediate System to Intermediate System protocol</t>
+
+      <t>LSP: Label Switched Path</t>
+
+      <t>NETCONF: Network Configuration Protocol</t>
+
+      <t>OSPF: Open Shortest Path First, a link state routing protocol</t>
+
+      <t>URI: Uniform Resource Identifier</t>
+
+      <t>ReST: Representational State Transfer, a style of stateless interface
+      and protocol that is generally carried over HTTP</t>
+
+      <t>SRLG: Shared Risk Link Group</t>
+
+      <t>TED: Traffic Engineering Database</t>
+
+      <t>YANG: A data definition language for NETCONF</t>
+    </section>
+
+    <section title="Model overview">
+      <t>This section provides an overview of the Layer 3 network topology
+      model.</t>
+
+      <section title="Model structure">
+        <t>The network topology model is defined by the following YANG
+        modules, whose relationship is roughly depicted in the figure below.
+        The base network topology is included in the diagram for
+        completeness.</t>
+
+        <figure align="center" anchor="model-structure"
+                title="Overall model structure">
+          <artwork align="left">
+
+        +-----------------------------+
+        |  +-----------------------+  |
+        |  |      ietf-network     |  |
+        |  +----------^------------+  |
+        |             |               |
+        |  +-----------------------+  |
+        |  | ietf-network-topology |  |
+        |  +----------+------------+  |
+        +-------------^---------------+
+                      |
+                      |
+          +-----------^-------------+
+          | l3-unicast-igp-topology |
+          +----+---------------+----+
+               ^               ^
+               |               |
+               |               |
+      +--------^-----+   +-----^---------+
+      | ospf-topology|   | isis-topology |
+      +--------------+   +---------------+
+            </artwork>
+        </figure>
+
+        <t>YANG modules ietf-network and ietf-network-topology 
+        collectively define the basic network topology
+        model. YANG module ietf-l3-unicast-igp-topology augments those models 
+        with additional definitions needed to represent Layer 3 Unicast IGP
+        topologies. This module in turn is augmented by YANG modules with
+        additional definitions for OSPF and for IS-IS topologies,
+        ietf-ospf-topology and ietf-isis-topology, respectively. </t>
+      </section>
+
+      <section title="Layer 3 Unicast - IGP">
+        <t>The Layer 3 Unicast IGP topology model is defined by YANG module
+        "ietf-l3-unicast-igp-topology". The model is depicted in the following
+        diagram. Brackets enclose list keys, "rw" means configuration, "ro"
+        operational state data, "?" designates optional nodes, "*" designates
+        nodes that can have multiple instances. Parantheses enclose choice and
+        case nodes. Notifications are not depicted. The prefix "nt:" refers to
+        the YANG module for network topology.</t>
+
+        <figure align="center">
+          <artwork align="left"> 
+module: ietf-l3-unicast-igp-topology
+augment /nw:networks/nw:network/nw:network-types:
+   +--rw l3-unicast-igp-topology!
+augment /nw:networks/nw:network:
+   +--rw igp-topology-attributes
+      +--rw name?   string
+      +--rw flag*   flag-type
+augment /nw:networks/nw:network/nw:node:
+   +--rw igp-node-attributes
+      +--rw name?        inet:domain-name
+      +--rw flag*        flag-type
+      +--rw router-id*   inet:ip-address
+      +--rw prefix* [prefix]
+         +--rw prefix    inet:ip-prefix
+         +--rw metric?   uint32
+         +--rw flag*     flag-type
+augment /nw:networks/nw:network/nt:link:
+   +--rw igp-link-attributes
+      +--rw name?     string
+      +--rw flag*     flag-type
+      +--rw metric?   uint32
+augment /nw:networks/nw:network/nw:node/nt:termination-point:
+   +--rw igp-termination-point-attributes
+      +--rw (termination-point-type)?
+         +--:(ip)
+         |  +--rw ip-address*      inet:ip-address
+         +--:(unnumbered)
+            +--rw unnumbered-id?   uint32
+           </artwork>
+        </figure>
+
+        <t>The module augments the original ietf-network and 
+        ietf-network-topology modules as
+        follows: <list style="symbols">
+            <t>A new network topology type is introduced,
+            l3-unicast-igp-topology.  The corresponding container 
+            augments the network-types of the ietf-network module. </t>
+
+            <t>Additional topology attributes are introduced, defined in a
+            grouping, which augments the "network" list of the network
+            module. The attributes include an IGP name, as well as a
+            set of flags (represented through a leaf-list). Each type of flag
+            is represented by a separate identity. This allows to introduce
+            additional flags in augmenting modules that are associated with
+            specific IGP topologies, without needing to revise this
+            module.</t>
+
+            <t>Additional data objects for nodes are introduced by augmenting
+            the "node" list of the network module. New objects
+            include again a set of flags, as well as a list of prefixes. Each
+            prefix in turn includes an ip prefix, a metric, and a
+            prefix-specific set of flags.</t>
+
+            <t>Links (in the ietf-network-topology module) are augmented 
+            with a set of parameters as well, allowing
+            to associate a link with an IGP name, another set of flags, and a
+            link metric.</t>
+
+            <t>Termination points (in the ietf-network-topology module as well) 
+            are augmented with a choice of IP address or
+            identifier.</t>
+          </list></t>
+
+        <t>In addition, the module defines a set of notifications to alert
+        clients of any events concerning links, nodes, prefixes, and
+        termination points. Each notification includes an indication of the
+        type of event, the topology from which it originated, and the affected
+        node, or link, or prefix, or termination point. In addition, as a
+        convenience to applications, additional data of the affected node, or
+        link, or termination point (respectively) is included. While this
+        makes notifications larger in volume than they would need to be, it
+        avoids the need for subsequent retrieval of context information, which
+        also might have changed in the meantime.</t>
+      </section>
+
+      <section title="OSPF Topology">
+        <t>OSPF is the next type of topology represented in the model. OSPF
+        represents a particular type of Layer 3 Unicast IGP. Accordingly, this
+        time the Layer 3 Unicast IGP topology model needs to be extended. The
+        corresponding extensions are introduced in a separate YANG module
+        "ietf-ospf-topology", whose structure is depicted in the following diagram.
+        For the most part, this module augments "ietf-l3-unicast-igp-topology".
+        Like before, brackets enclose list keys, "rw" means configuration,
+        "ro" operational state data, "?" designates optional nodes, "*"
+        designates nodes that can have multiple instances. Parantheses enclose
+        choice and case nodes. A "+" at the end of a line indicates a line break.
+        Notifications respectively augmentations of
+        notifications are not depicted. </t>
+
+        <figure align="center">
+          <artwork align="left"> 
+module: ietf-ospf-topology
+augment /nw:networks/nw:network/nw:network-types/+
+   |    l3t:l3-unicast-igp-topology:
+   +--rw ospf!
+augment /nw:networks/nw:network/l3t:igp-topology-attributes:
+   +--rw ospf-topology-attributes
+      +--rw area-id?   area-id
+augment /nw:networks/nw:network/nw:node/l3t:igp-node-attributes:
+   +--rw ospf-node-attributes
+      +--rw (router-type)?
+      |  +--:(abr)
+      |  |  +--rw abr?                 empty
+      |  +--:(asbr)
+      |  |  +--rw asbr?                empty
+      |  +--:(internal)
+      |  |  +--rw internal?            empty
+      |  +--:(pseudonode)
+      |     +--rw pseudonode?          empty
+      +--rw dr-interface-id?     uint32
+      +--rw multi-topology-id*   uint8
+      +--rw capabilities?        bits
+augment /nw:networks/nw:network/nt:link/l3t:igp-link-attributes:
+   +--rw ospf-link-attributes
+      +--rw multi-topology-id?   uint8
+augment /nw:networks/nw:network/nw:node/l3t:igp-node-attributes/+
+   |    l3t:prefix:
+   +--rw ospf-prefix-attributes
+      +--rw forwarding-address?   inet:ipv4-address
+
+              </artwork>
+        </figure>
+
+        <t>The module augments "ietf-l3-unicast-igp-topology" as follows: <list
+            style="symbols">
+            <t>A new topology type for an OSPF topology is introduced.</t>
+
+            <t>Additional topology attributes are defined in a new grouping
+            which augments igp-topology-attributes of the
+            ietf-l3-unicast-igp-topology module. The attributes include an OSPF
+            area-id identifying the OSPF area.</t>
+
+            <t>Additional data objects for nodes are introduced by augmenting
+            the igp-node-attributes of the l3-unicast-igp-topology module. New
+            objects include router-type, dr-interface-id for pseudonodes, list
+            of multi-topology-ids, ospf node capabilities, and traffic
+            engineering attributes.</t>
+
+            <t>Links are augmented with a multi-topology-id and traffic
+            engineering link attributes.</t>
+
+            <t>Prefixes are augmented with OSPF specific forwarding
+            address.</t>
+          </list> In addition, the module extends IGP node, link and prefix
+        notifications with OSPF attributes.</t>
+      </section>
+
+      <section title="IS-IS Topology">
+        <t>IS-IS is another type of Layer 3 Unicast IGP. Like OSPF topology,
+        IS-IS topology is defined in a separate module, "ietf-isis-topology", which
+        augments "ietf-l3-unicast-igp-topology". The structure is depicted in the
+        following diagram. Like before, brackets enclose list keys, "rw" means
+        configuration, "ro" operational state data, "?" designates optional
+        nodes, "*" designates nodes that can have multiple instances.
+        Parantheses enclose choice and case nodes. 
+        A "+" at the end of a line indicates a line break. 
+        Notifications are not depicted. </t>
+
+        <figure align="center">
+          <artwork align="left"> 
+module: ietf-isis-topology
+augment /nw:networks/nw:network/nw:network-types/+
+   |    l3t:l3-unicast-igp-topology:
+   +--rw isis!
+augment /nw:networks/nw:network/l3t:igp-topology-attributes:
+   +--rw isis-topology-attributes
+      +--rw net?   iso-net-id
+augment /nw:networks/nw:network/nw:node/l3t:igp-node-attributes:
+   +--rw isis-node-attributes
+      +--rw iso
+      |  +--rw iso-system-id?       iso-system-id
+      |  +--rw iso-pseudonode-id?   iso-pseudonode-id
+      +--rw net*                 iso-net-id
+      +--rw multi-topology-id*   uint8
+      +--rw (router-type)?
+         +--:(level-2)
+         |  +--rw level-2?             empty
+         +--:(level-1)
+         |  +--rw level-1?             empty
+         +--:(level-1-2)
+            +--rw level-1-2?           empty
+augment /nw:networks/nw:network/nt:link/l3t:igp-link-attributes:
+   +--rw isis-link-attributes
+      +--rw multi-topology-id?   uint8
+      </artwork>
+        </figure>
+
+        <t>The module augments the ietf-l3-unicast-igp-topology as follows: 
+        <list style="symbols">
+            <t>A new topology type is introduced for isis.</t>
+
+            <t>Additional topology attributes are introduced in a new grouping
+            which augments "igp-topology-attributes" of the
+            ietf-l3-unicast-igp-topology module. The attributes include an ISIS
+            NET-id identifying the area.</t>
+
+            <t>Additional data objects for nodes are introduced by augmenting
+            "igp-node-attributes" of the ietf-l3-unicast-igp-topology module. New
+            objects include router-type, iso-system-id to identify the router,
+            a list of multi-topology-id, a list of NET ids, and traffic
+            engineering attributes.</t>
+
+            <t>Links are augmented with multi-topology-id and traffic
+            engineering link attributes.</t>
+          </list> In addition, the module augments IGP nodes and links with
+        ISIS attributes.</t>
+      </section>
+    </section>
+
+    <section title="Layer 3 Unicast IGP Topology YANG Module">
+      <t><figure>
+          <artwork>
+&lt;CODE BEGINS&gt; file "ietf-l3-unicast-igp-topology@2015-12-11.yang"
+module ietf-l3-unicast-igp-topology {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-l3-unicast-igp-topology";
+  prefix "l3t";
+  import ietf-network {
+    prefix "nw";
+  }
+  import ietf-network-topology {
+    prefix "nt";
+  }
+  import ietf-inet-types {
+    prefix "inet";
+  }
+  
+  organization 
+    "IETF I2RS (Interface to the Routing System) Working Group";
+    
+  contact
+    "WG Web:    &lt;http://tools.ietf.org/wg/i2rs/&gt;
+     WG List:   &lt;mailto:i2rs@ietf.org&gt;
+     
+     WG Chair:  Susan Hares
+                &lt;mailto:shares@ndzh.com&gt;
+                
+     WG Chair:  Jeffrey Haas
+                &lt;mailto:jhaas@pfrc.org&gt;
+     
+     Editor:    Alexander Clemm
+                &lt;mailto:alex@cisco.com&gt;
+                
+     Editor:    Jan Medved
+                &lt;mailto:jmedved@cisco.com&gt;
+                
+     Editor:    Robert Varga
+                &lt;mailto:rovarga@cisco.com&gt;
+                
+     Editor:    Tony Tkacik
+                &lt;mailto:ttkacik@cisco.com&gt;
+                
+     Editor:    Xufeng Liu
+                &lt;mailto:xufeng.liu@ericsson.com&gt;
+                
+     Editor:    Igor Bryskin
+                &lt;mailto:Igor.Bryskin@huawei.com&gt;
+                
+     Editor:    Aihua Guo
+                &lt;mailto:aguo@advaoptical.com&gt;
+                
+     Editor:    Nitin Bahadur
+                &lt;mailto:nitin_bahadur@yahoo.com&gt;
+                
+     Editor:    Hariharan Ananthakrishnan
+                &lt;mailto:hari@packetdesign.com&gt;
+                
+     Editor:    Vishnu Pavan Beeram
+                &lt;mailto:vbeeram@juniper.net&gt;";
+                
+  description
+    "This module defines a model for Layer 3 Unicast IGP 
+     topologies.  
+    
+     Copyright (c) 2015 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject
+     to the license terms contained in, the Simplified BSD License
+     set forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents 
+     (http://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of 
+     draft-ietf-i2rs-yang-network-topo-02; 
+     see the RFC itself for full legal notices.
+     
+     NOTE TO RFC EDITOR: Please replace above reference to 
+     draft-ietf-i2rs-yang-network-topo-02 with RFC 
+     number when published (i.e. RFC xxxx).";
+ 
+  revision "2015-12-11" {
+    description 
+      "Initial revision.
+       NOTE TO RFC EDITOR: Please replace the following reference 
+       to draft-ietf-i2rs-yang-l3-topology-01 with 
+       RFC number when published (i.e. RFC xxxx).";
+    reference 
+      "draft-ietf-i2rs-yang-l3-topology-01";
+  }
+  
+  typedef igp-event-type {
+    type enumeration {
+      enum "add" {
+        value 0;
+        description 
+          "An IGP node or link or prefix or termination-point has
+          been added";
+      }
+      enum "remove" {
+        value 1;
+        description 
+          "An IGP node or link or prefix or termination-point has
+          been removed";
+      }
+      enum "update" {
+        value 2;
+        description 
+          "An IGP node or link or prefix or termination-point has
+          been updated";
+      }
+    }
+    description "IGP Event type for notifications";
+  } // igp-event-type
+
+  identity flag-identity {
+    description "Base type for flags";
+  }
+  identity undefined-flag {
+    base "flag-identity";
+    description "Undefined flag";
+  }
+  
+  typedef flag-type {
+    type identityref {
+      base "flag-identity";
+    }
+    description "Type for flags";
+  }
+
+  grouping network-ref {
+    description
+      "Grouping for an absolute reference to a network topology 
+      instance.";
+    leaf network-ref {
+      type leafref {
+        path "/nw:networks/nw:network/nw:network-id";
+      }
+      description
+        "An absolute reference to a network topology instance.";
+    }
+  }
+
+  grouping link-ref {
+    description
+      "Grouping for an absolute reference to a link instance.";
+      uses network-ref;
+      leaf link-ref {
+        type leafref {
+          path "/nw:networks/nw:network"
+            +"[nw:network-id = current()/../network-ref]"
+            +"/nt:link/nt:link-id";
+        }
+      description
+        "An absolute reference to a link instance.";
+    }
+  }
+
+  grouping node-ref {
+    description
+      "Grouping for an absolute reference to a node instance.";
+    uses network-ref;
+    leaf node-ref {
+      type leafref {
+        path "/nw:networks/nw:network"
+          +"[nw:network-id = current()/../network-ref]"
+          +"/nw:node/nw:node-id";
+      }
+      description
+        "An absolute reference to a node instance.";
+    }
+  }
+
+  grouping tp-ref {
+    description
+      "Grouping for an absolute reference to a termination point.";
+    uses node-ref;
+    leaf tp-ref {
+      type leafref {
+        path "/nw:networks/nw:network"
+          +"[nw:network-id = current()/../network-ref]"
+          +"/nw:node[nw:node-id = current()/../node-ref]"
+          +"/nt:termination-point/nt:tp-id";
+      }
+      description
+        "Grouping for an absolute reference to a termination point.";
+    }
+  }
+
+  grouping igp-prefix-attributes {
+    description
+      "IGP prefix attributes";
+    leaf prefix {
+      type inet:ip-prefix;
+      description 
+        "IP prefix value";
+    }
+    leaf metric {
+      type uint32;
+      description 
+        "Prefix metric";
+    }
+    leaf-list flag {
+      type flag-type;
+      description 
+        "Prefix flags";
+    }
+  }
+  
+  grouping l3-unicast-igp-topology-type {
+    description "Identify the topology type to be L3 unicast.";
+    container l3-unicast-igp-topology {
+      presence "indicates L3 Unicast IGP Topology";
+      description 
+        "The presence of the container node indicates L3 Unicast
+        IGP Topology";
+    }
+  }
+  
+  grouping igp-topology-attributes {
+    description "Topology scope attributes";
+    container igp-topology-attributes {
+      description "Containing topology attributes";
+      leaf name {
+        type string;
+        description 
+          "Name of the topology";
+      }
+      leaf-list flag {
+        type flag-type;
+        description 
+          "Topology flags";
+      }
+    }
+  }
+  
+  grouping igp-node-attributes {
+    description "IGP node scope attributes";
+    container igp-node-attributes {
+      description 
+        "Containing node attributes";
+      leaf name {
+        type inet:domain-name;
+        description 
+          "Node name";
+      }
+      leaf-list flag {
+        type flag-type;
+        description 
+          "Node operational flags";
+      }
+      leaf-list router-id {
+        type inet:ip-address;
+        description 
+          "Router-id for the node";
+      }
+      list prefix {
+        key "prefix";
+        description 
+          "A list of prefixes along with their attributes";
+        uses igp-prefix-attributes;
+      }
+    }
+  }
+
+  grouping igp-link-attributes {
+    description 
+      "IGP link scope attributes";
+    container igp-link-attributes {
+      description 
+        "Containing link attributes";
+      leaf name {
+        type string;
+        description 
+          "Link Name";
+      }
+      leaf-list flag {
+        type flag-type;
+        description 
+          "Link flags";
+      }
+      leaf metric {
+        type uint32 {
+          range "0..16777215"  {
+            description 
+              "This is a metric that can take a 3 byte metric, 
+               commonly used in OSPF/ISIS";
+          }
+        }
+        description 
+            "Link Metric";
+      }
+    }
+  } 
+  
+  grouping igp-termination-point-attributes {
+    description "IGP termination point scope attributes";
+    container igp-termination-point-attributes {
+      description 
+        "Containing termination point attributes";
+      choice termination-point-type {
+        description 
+          "Indicates the termination point type";
+        case ip {
+          leaf-list ip-address {
+            type inet:ip-address;
+            description 
+              "IPv4 or IPv6 address";
+          }
+        }
+        case unnumbered {
+          leaf unnumbered-id {
+            type uint32;
+            description 
+              "Unnumbered interface identifier";
+          }
+        }
+      }
+    }
+  } // grouping igp-termination-point-attributes
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    description 
+      "Introduce new network type for L3 unicast IGP topology";
+    uses l3-unicast-igp-topology-type;
+  }
+  
+  augment "/nw:networks/nw:network" {
+    when "nw:network-types/l3-unicast-igp-topology" {
+      description 
+        "Augmentation parameters apply only for networks with 
+        L3 unicast IGP topology";
+    }
+    description 
+        "Configuration parameters for L3 unicast IPG for the network
+        as a whole";
+    uses igp-topology-attributes;
+  }
+  
+  augment "/nw:networks/nw:network/nw:node" {
+    when "../nw:network-types/l3-unicast-igp-topology" {
+      description 
+        "Augmentation parameters apply only for networks with 
+        L3 unicast IGP topology";
+    }
+    description 
+        "Configuration parameters for L3 unicast IPG at the node 
+        level";
+    uses igp-node-attributes;
+  }
+  
+  augment "/nw:networks/nw:network/nt:link" {
+    when "../nw:network-types/l3-unicast-igp-topology" {
+      description 
+        "Augmentation parameters apply only for networks with
+        L3 unicast IGP topology";
+    }
+    description 
+      "Augment topology link configuration";
+    uses igp-link-attributes;
+  }
+
+  augment "/nw:networks/nw:network/nw:node/"
+         +"nt:termination-point" {
+    when "../../nw:network-types/l3-unicast-igp-topology" {
+      description 
+        "Augmentation parameters apply only for networks with 
+        L3 unicast IGP topology";
+    }
+    description "Augment topology termination point configuration";
+    uses igp-termination-point-attributes;
+  }
+  
+  notification igp-node-event {
+    description 
+      "Notification event for IGP node";
+    leaf igp-event-type {
+      type igp-event-type;
+      description 
+        "Event type";
+    }
+    uses node-ref;
+    uses l3-unicast-igp-topology-type;
+    uses igp-node-attributes;
+  }
+  
+  notification igp-link-event {
+    description 
+      "Notification event for IGP link";
+    leaf igp-event-type {
+      type igp-event-type;
+      description 
+        "Event type";
+    }
+    uses link-ref;
+    uses l3-unicast-igp-topology-type;
+    uses igp-link-attributes;
+  }
+
+  notification igp-prefix-event {
+    description 
+      "Notification event for IGP prefix";
+    leaf igp-event-type {
+      type igp-event-type;
+      description 
+        "Event type";
+    }
+    uses node-ref;
+    uses l3-unicast-igp-topology-type;
+    container prefix {
+      description 
+        "Containing IPG prefix attributes";
+      uses igp-prefix-attributes;
+    }
+  }
+  
+  notification termination-point-event {
+    description 
+      "Notification event for IGP termination point";
+    leaf igp-event-type {
+      type igp-event-type;
+      description 
+        "Event type";
+    }
+    uses tp-ref;
+    uses l3-unicast-igp-topology-type;
+    uses igp-termination-point-attributes;
+  }
+}
+
+&lt;CODE ENDS&gt; 
+        </artwork>
+        </figure></t>
+    </section>
+
+    <section title="OSPF Topology YANG Module">
+      <t><figure>
+          <artwork>
+&lt;CODE BEGINS&gt; file "ietf-ospf-topology@2015-12-11.yang"
+module ietf-ospf-topology {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-ospf-topology";
+  prefix "ospf";
+  
+  import ietf-inet-types {
+    prefix "inet";
+  }
+  import ietf-network {
+    prefix "nw";
+  }
+  import ietf-network-topology {
+    prefix "nt";
+  }
+  import ietf-l3-unicast-igp-topology {
+    prefix "l3t";
+  }
+  
+   organization 
+    "IETF I2RS (Interface to the Routing System) Working Group";
+    
+  contact
+    "WG Web:    &lt;http://tools.ietf.org/wg/i2rs/&gt;
+     WG List:   &lt;mailto:i2rs@ietf.org&gt;
+     
+     WG Chair:  Susan Hares
+                &lt;mailto:shares@ndzh.com&gt;
+                
+     WG Chair:  Jeffrey Haas
+                &lt;mailto:jhaas@pfrc.org&gt;
+     
+     Editor:    Alexander Clemm
+                &lt;mailto:alex@cisco.com&gt;
+                
+     Editor:    Jan Medved
+                &lt;mailto:jmedved@cisco.com&gt;
+                
+     Editor:    Robert Varga
+                &lt;mailto:rovarga@cisco.com&gt;
+                
+     Editor:    Tony Tkacik
+                &lt;mailto:ttkacik@cisco.com&gt;
+                
+     Editor:    Xufeng Liu
+                &lt;mailto:xufeng.liu@ericsson.com&gt;
+                
+     Editor:    Igor Bryskin
+                &lt;mailto:Igor.Bryskin@huawei.com&gt;
+                
+     Editor:    Aihua Guo
+                &lt;mailto:aguo@advaoptical.com&gt;
+                
+     Editor:    Nitin Bahadur
+                &lt;mailto:nitin_bahadur@yahoo.com&gt;
+                
+     Editor:    Hariharan Ananthakrishnan
+                &lt;mailto:hari@packetdesign.com&gt;
+                
+     Editor:    Vishnu Pavan Beeram
+                &lt;mailto:vbeeram@juniper.net&gt;";
+                
+  description
+    "This module defines a model for OSPF network topologies.  
+     
+     Copyright (c) 2015 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject
+     to the license terms contained in, the Simplified BSD License
+     set forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents 
+     (http://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of 
+     draft-ietf-i2rs-yang-network-topo-02; 
+     see the RFC itself for full legal notices.
+     
+     NOTE TO RFC EDITOR: Please replace above reference to 
+     draft-ietf-i2rs-yang-network-topo-02 with RFC 
+     number when published (i.e. RFC xxxx).";
+
+   revision "2015-12-11" {
+    description 
+      "Initial revision.
+       NOTE TO RFC EDITOR: Please replace the following reference 
+       to draft-ietf-i2rs-yang-l3-topology-01 with 
+       RFC number when published (i.e. RFC xxxx).";
+    reference 
+      "draft-ietf-i2rs-yang-l3-topology-01";
+  }
+ 
+  typedef area-id {
+    type uint32;
+    description 
+      "OSPF Area ID";
+  }
+  
+  grouping ospf-topology-type {
+    description
+      "Identifies the OSPF topology type.";
+    container ospf {
+      presence "indiates OSPF Topology";
+      description
+        "Its presence identifies the OSPF topology type.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types/"
+    + "l3t:l3-unicast-igp-topology" {
+    description 
+      "Defines the OSPF topology type.";    
+    uses ospf-topology-type;
+  }
+   
+  augment "/nw:networks/nw:network/l3t:igp-topology-attributes" {
+    when "../nw:network-types/l3t:l3-unicast-igp-topology/ospf" {
+      description 
+        "Augment only for OSPF topology";
+    }
+    description 
+      "Augment topology configuration";
+    container ospf-topology-attributes {
+      description 
+        "Containing topology attributes";
+      leaf area-id {
+        type area-id;
+        description 
+          "OSPF area ID";
+      }
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:node/l3t:igp-node-attributes" {
+    when "../../nw:network-types/l3t:l3-unicast-igp-topology/ospf" {
+      description 
+        "Augment only for OSPF topology";
+    }
+    description 
+      "Augment node configuration";
+    uses ospf-node-attributes;
+  }
+
+  augment "/nw:networks/nw:network/nt:link/l3t:igp-link-attributes" {
+    when "../../nw:network-types/l3t:l3-unicast-igp-topology/ospf" {
+      description 
+        "Augment only for OSPF topology";
+    }
+    description 
+      "Augment link configuration";
+    uses ospf-link-attributes;
+  }
+
+  augment "/nw:networks/nw:network/nw:node/"+
+    "l3t:igp-node-attributes/l3t:prefix" {
+    when "../../../nw:network-types/l3t:l3-unicast-igp-topology/"
+      +"ospf" {
+      description 
+        "Augment only for OSPF topology";
+    }
+    description 
+      "Augment prefix";    
+    uses ospf-prefix-attributes;
+  }
+
+  grouping ospf-node-attributes {
+    description 
+      "OSPF node scope attributes";
+    container ospf-node-attributes {
+      description 
+        "Containing node attributes";
+      choice router-type {
+        description 
+          "Indicates router type";
+        case abr {
+          leaf abr {
+            type empty;
+            description 
+              "The node is ABR";
+          }
+        }
+        case asbr {
+          leaf asbr {
+            type empty;
+            description 
+              "The node is ASBR";
+          }
+        }
+        case internal {
+          leaf internal {
+            type empty;
+            description 
+              "The node is internal";
+          }
+        }
+        case pseudonode {
+          leaf pseudonode {
+            type empty;
+            description 
+              "The node is pseudonode";
+          }
+        }
+      }
+      leaf dr-interface-id {
+        when "../router-type/pseudonode" {
+          description 
+            "Valid only for pseudonode";
+        }
+        type uint32;
+        default "0";
+        description 
+          "For pseudonodes, DR interface-id";
+      }
+      leaf-list multi-topology-id {
+        type uint8 {
+          range "0..127";
+        }
+        max-elements "128";
+        description 
+          "List of Multi-Topology Identifier up-to 128 (0-127).
+           See RFC 4915";
+      }
+      leaf capabilities {
+        type bits {
+          bit graceful-restart-capable {
+            position 0;
+            description 
+              "Graceful restart capable";
+          }
+          bit graceful-restart-helper {
+            position 1;
+            description 
+              "Graceful restart helper";
+          }
+          bit stub-router-support {
+            position 2;
+            description 
+              "Stub router support";
+          }
+          bit traffic-engineering-support {
+            position 3;
+            description 
+              "Traffic engineering support";
+          }
+          bit point-to-point-over-lan {
+            position 4;
+            description 
+              "Support point to point over LAN";
+          }
+          bit experimental-te {
+            position 5;
+            description 
+              "Support experimental traffic engineering";
+          }
+        }
+        description 
+          "OSPF capabilities as bit vector. RFC 4970";
+      }
+    } 
+  } 
+  
+  grouping ospf-link-attributes {
+    description 
+      "OSPF link scope attributes";
+    container ospf-link-attributes {
+      description 
+        "Containing OSPF link attributes";    
+      leaf multi-topology-id {
+        type uint8 {
+          range "0..127";
+        }
+        description "Muti topology ID";
+      }
+    }
+  } // ospf-link-attributes
+
+  grouping ospf-prefix-attributes {
+    description 
+      "OSPF prefix attributes";    
+    container ospf-prefix-attributes {
+      description 
+        "Containing prefix attributes";
+      leaf forwarding-address {
+        when "../../l3t:l3-unicast-igp-topology/l3t:ospf/"+
+          "l3t:router-type/l3t:asbr" {
+          description "Valid only for ABSR";
+        }
+        type inet:ipv4-address;
+        description 
+          "Forwarding address for ABSR";
+      }
+    }
+  }
+  
+  augment "/l3t:igp-node-event" {
+    description 
+      "OSPF node event";
+    uses ospf-topology-type;
+    uses ospf:ospf-node-attributes;
+  }
+  
+  augment "/l3t:igp-link-event" {
+    description 
+      "OSPF link event";
+    uses ospf-topology-type;
+    uses ospf:ospf-link-attributes;
+  }
+  
+  augment "/l3t:igp-prefix-event" {
+    description 
+      "OSPF prefix event";
+    uses ospf-topology-type;
+    uses ospf:ospf-prefix-attributes;
+  }
+}
+
+&lt;CODE ENDS&gt; 
+        </artwork>
+        </figure></t>
+    </section>
+
+    <section title="ISIS Topology YANG Module">
+      <t><figure>
+          <artwork>
+&lt;CODE BEGINS&gt; file "isis-topology@2015-12-11.yang"
+module ietf-isis-topology {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-isis-topology";
+  prefix "isis";
+  
+  import ietf-network {
+    prefix "nw";
+  }
+  import ietf-network-topology {
+    prefix "nt";
+  }
+  import ietf-l3-unicast-igp-topology {
+    prefix "l3t";
+  }
+   
+   organization 
+    "IETF I2RS (Interface to the Routing System) Working Group";
+    
+  contact
+    "WG Web:    &lt;http://tools.ietf.org/wg/i2rs/&gt;
+     WG List:   &lt;mailto:i2rs@ietf.org&gt;
+     
+     WG Chair:  Susan Hares
+                &lt;mailto:shares@ndzh.com&gt;
+                
+     WG Chair:  Jeffrey Haas
+                &lt;mailto:jhaas@pfrc.org&gt;
+     
+     Editor:    Alexander Clemm
+                &lt;mailto:alex@cisco.com&gt;
+                
+     Editor:    Jan Medved
+                &lt;mailto:jmedved@cisco.com&gt;
+                
+     Editor:    Robert Varga
+                &lt;mailto:rovarga@cisco.com&gt;
+                
+     Editor:    Tony Tkacik
+                &lt;mailto:ttkacik@cisco.com&gt;
+                
+     Editor:    Xufeng Liu
+                &lt;mailto:xufeng.liu@ericsson.com&gt;
+                
+     Editor:    Igor Bryskin
+                &lt;mailto:Igor.Bryskin@huawei.com&gt;
+                
+     Editor:    Aihua Guo
+                &lt;mailto:aguo@advaoptical.com&gt;
+                
+     Editor:    Nitin Bahadur
+                &lt;mailto:nitin_bahadur@yahoo.com&gt;
+                
+     Editor:    Hariharan Ananthakrishnan
+                &lt;mailto:hari@packetdesign.com&gt;
+                
+     Editor:    Vishnu Pavan Beeram
+                &lt;mailto:vbeeram@juniper.net&gt;";
+                
+  description
+    "This module defines a model for IS-IS network topologies.  
+     
+     Copyright (c) 2015 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject
+     to the license terms contained in, the Simplified BSD License
+     set forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents 
+     (http://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of 
+     draft-ietf-i2rs-yang-network-topo-02; 
+     see the RFC itself for full legal notices.
+     
+     NOTE TO RFC EDITOR: Please replace above reference to 
+     draft-ietf-i2rs-yang-network-topo-02 with RFC 
+     number when published (i.e. RFC xxxx).";
+
+   revision "2015-12-11" {
+    description 
+      "Initial revision.
+       NOTE TO RFC EDITOR: Please replace the following reference 
+       to draft-ietf-i2rs-yang-l3-topology-01 with 
+       RFC number when published (i.e. RFC xxxx).";
+    reference 
+      "draft-ietf-i2rs-yang-l3-topology-01";
+  }
+ 
+  typedef iso-system-id {
+    type string {
+      pattern '[0-9a-fA-F]{4}(\.[0-9a-fA-F]{4}){2}';
+    }
+    description 
+      "ISO System ID. RFC 1237";
+  }
+  
+  typedef iso-pseudonode-id {
+    type string {
+      pattern '[0-9a-fA-F]{2}';
+    }
+    description 
+      "ISO pseudonode id for broadcast network";    
+  }
+
+  typedef iso-net-id {
+    type string {
+      pattern '[0-9a-fA-F]{2}((\.[0-9a-fA-F]{4}){6})';
+    }
+    description 
+      "ISO NET ID. RFC 1237";
+  }
+
+  grouping isis-topology-type {
+    description
+      "Identifies the ISIS topology type.";
+    container isis {
+      presence "Indicates ISIS Topology";
+      description
+        "Its presence identifies the ISIS topology type.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types/"
+    +"l3t:l3-unicast-igp-topology" {
+    description
+      "Defines the ISIS topology type.";    
+    uses isis-topology-type;
+  }
+  
+  augment "/nw:networks/nw:network/l3t:igp-topology-attributes" {
+    when "../nw:network-types/l3t:l3-unicast-igp-topology/isis" {
+      description 
+        "Augment only for ISIS topology";
+    }
+    description 
+      "Augment topology configuration";
+    container isis-topology-attributes {
+      description 
+        "Containing topology attributes";
+      leaf net {
+        type iso-net-id;
+        description 
+          "ISO NET ID value";
+      }
+    }
+  }
+  
+  augment "/nw:networks/nw:network/nw:node/"+
+    "l3t:igp-node-attributes" {
+    when "../../nw:network-types/l3t:l3-unicast-igp-topology/isis" {
+      description 
+        "Augment only for ISIS topology";
+    }
+    description 
+      "Augment node configuration";
+    uses isis-node-attributes;
+  }
+  
+  augment "/nw:networks/nw:network/nt:link/l3t:igp-link-attributes" {
+    when "../../nw:network-types/l3t:l3-unicast-igp-topology/isis" {
+      description 
+        "Augment only for ISIS topology";
+    }
+    description 
+      "Augment link configuration";
+    uses isis-link-attributes;
+  }
+  
+  grouping isis-node-attributes {
+    description 
+      "ISIS node scope attributes";
+    container isis-node-attributes {
+      description 
+        "Containing node attributes";
+      container iso {
+        description 
+          "Containing ISO atrributes";
+        leaf iso-system-id {
+          type iso-system-id;
+          description 
+            "ISO system ID";
+        }
+        leaf iso-pseudonode-id {
+          type iso-pseudonode-id;
+          default "00";
+          description 
+            "Pseudonode ID";
+        }
+      }
+      leaf-list net {
+        type iso-net-id;
+        max-elements 3;
+        description 
+          "List of ISO NET IDs";
+      }
+      leaf-list multi-topology-id {
+        type uint8 {
+          range "0..127";
+        }
+        max-elements "128";
+        description 
+          "List of Multi Topology Identifier upto 128 (0-127).
+          RFC 4915";
+      }
+      choice router-type {
+        description 
+          "Indicates router type";
+        case level-2 {
+          leaf level-2 {
+            type empty;
+            description 
+              "Level-2 only";
+          }
+        }
+        case level-1 {
+          leaf level-1 {
+            type empty;
+            description 
+              "Level-1 only";
+          }
+        }
+        case level-1-2 {
+          leaf level-1-2 {
+            type empty;
+            description 
+              "Level-1 and Level-2";
+          }
+        }
+      }
+    }
+  }
+  
+  grouping isis-link-attributes {
+    description 
+      "ISIS link scope attributes";
+    container isis-link-attributes {
+      description 
+        "Containing link attributes";    
+      leaf multi-topology-id {
+        type uint8 {
+          range "0..127";
+        }
+        description 
+          "Multi topology ID";
+      }
+    }    
+  }
+
+  augment "/l3t:igp-node-event" {
+    description 
+      "ISIS node event";
+    uses isis-topology-type;
+    uses isis-node-attributes;
+  }
+  
+  augment "/l3t:igp-link-event" {
+    description 
+      "ISIS link event";
+    uses isis-topology-type;
+    uses isis-link-attributes;
+  }
+} 
+
+&lt;CODE ENDS&gt; 
+        </artwork>
+        </figure></t>
+    </section>
+
+
+    <section title="Security Considerations">
+      <t>The transport protocol used for sending the topology data MUST
+      support authentication and SHOULD support encryption. The data-model by
+      itself does not create any security implications.</t>
+    </section>
+
+    <section title="Contributors">
+      <t>The model presented in this paper was contributed to by more people
+      than can be listed on the author list. Additional contributors include:
+      <list style="symbols">
+          <t>Ken Gray, Juniper Networks</t>
+
+          <t>Tom Nadeau, Brocade</t>
+
+          <t>Aleksandr Zhdankin, Cisco</t>
+        </list></t>
+    </section>
+
+    <section title="Acknowledgements">
+      <t>We wish to acknowledge the helpful contributions, comments, and
+      suggestions that were received from Ladislav Lhotka, Andy Bierman,
+      Carlos Pignataro, Joel Halpern, Juergen Schoenwaelder, Alia
+      Atlas, and Susan Hares.</t>
+    </section>
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <reference anchor="RFC1195">
+        <front>
+          <title>Use of OSI IS-IS for Routing in TCP/IP and Dual
+          Environments</title>
+
+          <author fullname="R. Callon" initials="R." surname="Callon">
+            <organization/>
+          </author>
+
+          <date month="December" year="1990"/>
+        </front>
+
+        <seriesInfo name="RFC" value="1195"/>
+      </reference>
+
+      <reference anchor="RFC2178">
+        <front>
+          <title>OSPF Version 2</title>
+
+          <author fullname="J. Moy" initials="J." surname="Moy">
+            <organization/>
+          </author>
+
+          <date month="July" year="1997"/>
+        </front>
+
+        <seriesInfo name="RFC" value="2178"/>
+      </reference>
+
+      <reference anchor="RFC6020">
+        <front>
+          <title>YANG - A Data Modeling Language for the Network Configuration
+          Protocol (NETCONF)</title>
+
+          <author fullname="M. Bjorklund" initials="M." surname="Bjorklund">
+            <organization/>
+          </author>
+
+          <date month="October" year="2010"/>
+        </front>
+
+        <seriesInfo name="RFC" value="6020"/>
+      </reference>
+
+      <reference anchor="RFC6241">
+        <front>
+          <title>Network Configuration Protocol (NETCONF)</title>
+
+          <author fullname="R. Enns" initials="R." surname="Enns">
+            <organization/>
+          </author>
+
+          <author fullname="M. Bjorklund" initials="M." surname="Bjorklund">
+            <organization/>
+          </author>
+
+          <author fullname="J. Schoenwaelder" initials="J."
+                  surname="Schoenwaelder">
+            <organization/>
+          </author>
+
+          <author fullname="A. Bierman" initials="A." surname="Bierman">
+            <organization/>
+          </author>
+
+          <date month="June" year="2011"/>
+        </front>
+
+        <seriesInfo name="RFC" value="6241"/>
+      </reference>
+
+      <reference anchor="RFC6991">
+        <front>
+          <title>Common YANG Data Types</title>
+
+          <author fullname="J. Schoenwaelder" initials="J."
+                  surname="Schoenwaelder">
+            <organization/>
+          </author>
+
+          <date month="July" year="2013"/>
+        </front>
+
+        <seriesInfo name="RFC" value="6991"/>
+      </reference>
+
+      <reference anchor="RFC7223">
+        <front>
+          <title>A YANG Data Model for Interface Management</title>
+
+          <author fullname="M. Bjorklund" initials="M." surname="Bjorklund">
+            <organization/>
+          </author>
+
+          <date month="May" year="2014"/>
+        </front>
+
+        <seriesInfo name="RFC" value="7223"/>
+      </reference>
+
+      <reference anchor="I-D.draft-ietf-netconf-restconf">
+        <front>
+          <title>RESTCONF Protocol</title>
+
+          <author fullname="A. Bierman" initials="A." surname="Bierman">
+            <organization/>
+          </author>
+
+          <author fullname="M. Bjorklund" initials="M." surname="Bjorklund">
+            <organization/>
+          </author>
+
+          <author fullname="K. Watsen" initials="K." surname="Watsen">
+            <organization/>
+          </author>
+
+          <date month="October" year="2015"/>
+        </front>
+
+        <seriesInfo name="I-D" value="draft-ietf-netconf-restconf-08"/>
+      </reference>
+
+      <reference anchor="I-D.draft-ietf-netmod-yang-json">
+        <front>
+          <title>JSON Encoding of Data Modeled with YANG</title>
+
+          <author fullname="L. Lhotka" initials="L." surname="Lhotka">
+            <organization/>
+          </author>
+
+          <date month="October" year="2015"/>
+        </front>
+
+        <seriesInfo name="I-D" value="draft-ietf-netmod-yang-json-06"/>
+      </reference>
+
+      <reference anchor="I-D.draft-ietf-i2rs-yang-network-topo">
+        <front>
+          <title>A YANG Data Model for Network Topologies</title>
+
+          <author fullname="A. Clemm" initials="A." surname="Clemm">
+            <organization/>
+          </author>
+
+          <author fullname="J. Medved" initials="J." surname="Medved">
+            <organization/>
+          </author>
+
+          <author fullname="T. Tkacik" initials="T." surname="Tkacik">
+            <organization/>
+          </author>
+
+          <author fullname="R. Varga" initials="R." surname="Varga">
+            <organization/>
+          </author>
+
+          <author fullname="N. Bahadur" initials="N." surname="Bahadur">
+            <organization/>
+          </author>
+
+          <author fullname="H. Ananthakrishnan" initials="H."
+                  surname="Ananthakrishnan">
+            <organization/>
+          </author>
+
+          <date month="December" year="2015"/>
+        </front>
+
+        <seriesInfo name="I-D" value="draft-ietf-i2rs-yang-network-topo-02"/>
+      </reference>
+      
+      <reference anchor="I-D.draft-ietf-netmod-rfc6020bis-09">
+        <front>
+          <title>The YANG 1.1 Data Modeling Language</title>
+
+          <author fullname="M. Bjorklund" initials="M." surname="Bjorklund">
+            <organization/>
+          </author>
+
+          <date month="December" year="2015"/>
+        </front>
+
+        <seriesInfo name="I-D" value="draft-ietf-netmod-rfc6020bis-09"/>
+      </reference>
+      
+    </references>
+
+    <references title="Informative References">
+
+      <reference anchor="I-D.draft-ietf-i2rs-usecase-reqs-summary">
+        <front>
+          <title>Summary of I2RS Use Case Requirements</title>
+
+          <author fullname="S. Hares" initials="S." surname="Hares">
+            <organization/>
+          </author>
+
+          <author fullname="M. Chen" initials="M." surname="Chen">
+            <organization/>
+          </author>
+
+          <date month="May" year="2015"/>
+        </front>
+
+        <seriesInfo name="I-D" value="draft-ietf-i2rs-usecase-reqs-summary-01"/>
+      </reference>
+
+    </references>
+  </back>
+</rfc>
