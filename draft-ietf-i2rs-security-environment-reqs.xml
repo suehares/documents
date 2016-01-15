@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+  <!ENTITY I-D.ietf-i2rs-architecture SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-i2rs-architecture-09.xml">
+  <!ENTITY I-D.ietf-i2rs-protocol-security-requirements SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-i2rs-protocol-security-requirements-01.xml">
+  <!ENTITY rfc2119 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml'>
+]>
+
+
+
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs),
+     please see http://xml.resource.org/authoring/README.html -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+     (Here they are set differently than their defaults in xml2rfc v1.35) -->
+
+<!-- give errors regarding ID-nits and DTD validation -->
+<?rfc strict="yes"?>
+
+<!-- control the table of contents (ToC) -->
+<!-- generate a ToC -->
+<?rfc toc="yes"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<?rfc tocdepth="4"?>
+
+<!-- control references -->
+<!-- use anchors instead of numbers for refs, i.e, [RFC2119] instead of [1] -->
+<?rfc symrefs="yes"?>
+<!-- sort the reference entries alphabetically -->
+<?rfc sortrefs="no" ?>
+
+<!-- control vertical white space
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<!-- do not start each main section on a new page -->
+<?rfc compact="yes" ?>
+<!-- "no" to keep one blank line between list items (rfced) -->
+<?rfc subcompact="no" ?>
+
+<!-- encourage use of "xml2rfc" tool -->
+<?rfc rfcprocack="yes" ?>
+<!-- end of list of popular I-D processing instructions -->
+
+<rfc category="info" ipr="trust200902" docName="draft-ietf-i2rs-security-environment-reqs-00">
+  <front>
+    <title abbrev="I2RS Environment Security Requirements">I2RS Environment Security Requirements</title>
+
+    <author fullname="Daniel Migault" initials="D." surname="Migault" role="editor">
+      <organization> Ericsson </organization>
+      <address>
+        <postal>
+          <street> 8400 boulevard Decarie </street>
+          <city> Montreal, QC </city>
+          <code> H4P 2N2 </code>
+          <country> Canada </country>
+        </postal>
+        <phone> +1 514-452-2160 </phone>
+        <email> daniel.migault@ericsson.com </email>
+      </address>
+    </author>
+
+    <author fullname="Joel Halpern" initials="J.H." surname="Halpern">
+      <organization>Ericsson</organization>
+      <address>
+        <email>Joel.Halpern@ericsson.com</email>
+      </address>
+    </author>
+    <author fullname="Susan Hares" initials="S" surname="Hares">
+      <organization>Huawei</organization>
+      <address>
+        <postal>
+          <street>7453 Hickory Hill</street>
+          <city>Saline</city>
+          <region>MI</region>
+          <code>48176</code>
+          <country>USA</country>
+        </postal>
+        <email>shares@ndzh.com</email>
+        <!-- uri and facsimile elements may also be added -->
+      </address>
+    </author>
+
+    <date/> <!-- <date day="4" month="March" year="2015"/> -->
+    <area> Routing Area </area>
+    <workgroup> I2RS WG </workgroup>
+
+    <abstract>
+    <t>This document provides environment security requirements for the I2RS architecture. Environment security requirements are independent of the protocol used for I2RS. As a result, the requirements provided in this document are intended to provide good security practise so I2RS can be securely deployed and operated.</t> 
+    <t>These security requirements are designated as environment security requirements as opposed to the protocol security requirements.
+<!--
+  described in <xref target="I-D.ietf-i2rs-protocol-security-requirements"/>. 
+-->
+The reason to have separate document is that protocol security requirements are intended to help the design of the I2RS protocol whether the environment requirements are rather intended for deployment or implementations.</t>
+    </abstract>
+
+  </front>
+  <middle>
+
+        <section title="Requirements notation">
+        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in <xref target="RFC2119"/>.</t>
+        </section>
+
+
+    <section title="Introduction" anchor="sec-intro">
+    <t>This document provides environment security requirements for the I2RS architecture. Environment security requirements are independent of the protocol used for I2RS. As a result, the requirements provided in this document are intended to provide good security practise so I2RS can be securely deployed and operated.</t> 
+    <t>These security requirements are designated as environment security requirements as opposed to the protocol security requirements  described in <xref target="I-D.ietf-i2rs-protocol-security-requirements"/>. The reason to have separate document is that protocol security requirements are intended to help the design of the I2RS protocol whether the environment requirements are rather intended for deployment or implementations.</t>
+<!--
+     <t>This document addresses security considerations for the I2RS architecture. These requirements are also designated as environment security requirements. These security requirements are independent from the I2RS protocol used, and as such do not address requirements the I2RS protocol is expected to meet. The security requirement provided in this document are intended to provide guidance and security principles to guarantee the stability of the I2RS architecture. This documents provides an analysis of the security issues of the I2RS architecture beyond those already listed in <xref target="I-D.ietf-i2rs-architecture"/>. </t> 
+
+      <t>On the other hand, security requirements for the I2RS protocol design are described in a separate document  <xref target="I-D.ietf-i2rs-protocol-security-requirements"/>.</t>
+-->
+
+      <t>Even though I2RS is mostly concerned by the interface between the I2RS Client and the I2RS Agent, the security recommendations must consider the entire I2RS architecture, specifying  where security functions may be hosted, and what should be met so to address any new attack vectors exposed by deploying this architecture. In other words, security has to be considered globally over the complete I2RS architecture and not only on the interfaces.</t>
+
+      <t>I2RS architecture depicted in <xref target="I-D.ietf-i2rs-architecture"/> describes the I2RS components and their interactions to provide a programmatic interface for the routing system. I2RS components as well as their interactions have not yet been considered in conventional routing systems. As such it introduces a need to interface with the routing system designated as I2RS plane in this document. </t>
+
+
+      <t>This document is built as follows. <xref target="sec-i2rs-plane-isolation"/> describes how the I2RS plane can be contained or isolated from existing management plane, control plane and forwarding plane. The remaining sections of the document focuses on the security within the I2RS plane. <xref target="sec-i2rs-aaa"/> analyzes how the I2RS Access Control policies can be deployed throughout the I2RS plane in order to only grant access to the routing system resources to authorized components with the authorized privileges. This also includes providing a robust communication system between the components. Then, <xref target="sec-i2rs-application-isolation"/> details how I2RS keeps applications isolated one from another and do not affect the I2RS components. Applications may be independent, with different scopes, owned by different tenants. In addition, they modify the routing system that may be in an automatic way.</t>
+
+ 
+      <t>The reader is expected to be familiar with the <xref target="I-D.ietf-i2rs-architecture"/>. The document provides a list of environment security requirements. Motivations are placed before the requirements are announced.</t>
+
+    </section>
+
+    <section title="Terminology and Acronyms">
+    <t>
+        <list hangIndent="6" style="hanging">
+            <t hangText="- Environment Security Requirements : "> </t> 
+            <t hangText="- I2RS plane :"> The environment the I2RS  process is running on. It includes the Applications, the I2RS Client and the I2RS Agent.</t> 
+            <t hangText="- I2RS user :"> The user of the I2RS client software or system.</t> 
+	    <t hangText="- I2RS Access Control policies:"> policies controlling access of the routing resources by Applications. These policies are divided into policies applied by the I2RS Client regarding Applications and policies applied by the I2RS Agent regarding I2RS Clients.</t>
+	    <t hangText="- I2RS Client Access Control policies :"> The Access Control policies processed by the I2RS Client. </t>
+	    <t hangText="- I2RS Agent Access Control policies :"> The Access Control policies processed by the I2RS Agent. </t>
+       </list> 
+     </t>
+    </section>
+
+
+    <section title="I2RS Plane Isolation" anchor="sec-i2rs-plane-isolation">
+
+<t>Isolating the I2RS plane from other network plane, such as the control plane, is foundational to the security of the I2RS environment. Clearly differentiating I2RS components from the rest of the network protects the I2RS components from vulnerabilities in other parts of the network, and protect other systems vital to the health of the network from vulnerabilities in the I2RS plane. Separating the I2RS plane from other network control and forwarding planes is similar to the best common practice of containerizing software into modules, and defense in depth in the larger world of network security.</t>
+
+<!--
+         <figure title="Architecture of I2RS clients and agents" anchor="fig-i2rs-arch">
+
+	    <t><xref target="fig-i2rs-arch"/> (copied from <xref target="I-D.ietf-i2rs-architecture"/>) depicts the I2RS components that constitute the I2RS plane. More specifically, the network oriented applications, the I2RS Client, the I2RS Agent, and to some extent the routing system resources accessed by the I2RS Agent. The I2RS plane has its own goals and specificities that make it a separate plane from the others. 
+The I2RS plane purpose is to provide a standard programmatic interface of the routing system resources to network oriented applications. Control plane and forwarding planes are related to routing protocols, and I2RS is based on top of those. The management plane is usually vendor specific, provides a broader control over the networking equipment such as system service. Given its associated privileges it is expected to be reserved to highly trusted users like network administrators.</t> 
+
+            <t>[QUESTION: Should we remove the text above and the figure? ]</t>
+-->
+	    <t>That said the I2RS plane cannot be considered as completely isolated from other planes, and interactions should be identified and controlled. Follows a brief description on how the I2RS plane positions itself in regard to the other planes. The description is indicative, and may not be exhaustive.</t> 
+
+	    <section title="I2RS plane and management plane">
+<t>The I2RS plane purpose is to provide a standard programmatic interface of the routing system resources to network oriented applications. Control plane and forwarding planes are related to routing protocols, and I2RS is based on top of those. The management plane is usually vendor specific, provides a broader control over the networking equipment such as system service. Given its associated privileges it is expected to be reserved to highly trusted users like network administrators.</t> 
+                   <t>
+                   The I2RS plane and the management plane both interact with several common elements on forwarding and packet processing devices. <xref target="I-D.ietf-i2rs-architecture"/> describes several of these interaction points such as the local configuration, the static system state, routing, and signalling.
+Because of this potential overlaps, a routing resource may be accessed by different means (APIs, applications) and different planes. To keep these overlaps under control, one could either control the access to these resources with northbound APIs for example. Northbound APIs are provided to limit the scope of the applications toward the routing resources. In our case, the northbound API may be provided for the I2RS applications by the I2RS Client as well as to the management plane.  In case conflicting overlaps cannot be avoided, and routing resource can be accessed by both the management plane and the I2RS plane, then, they should be resolved in a deterministic way.</t>
+<t>On the northbound side, there must be clear protections against the I2RS system "infecting" the management system with bad information, or the management system "infecting" the I2RS system with bad information. The primary protection in this space is going to need to be validation rules on the speed of information flow, value limits on the data presented, and other protections of this type.</t>
+<t>On the conflicting side/issues, there should be clear rules about which plan's commands win in the case of conflict in order to prevent attacks where the two systems can be forced to deadlock.</t>
+	    </section>		    
+
+	    <section title="I2RS plane and forwarding plane">
+
+                <t>Applications hosted on I2RS Client belongs to the I2RS plane. These Applications are hard to remain constrained into the I2RS plane, or even to limit their scope within the I2RS plane.</t>
+
+                <t>Applications using I2RS are part of the I2RS plane but may also interact with other components outside the I2RS plane. A common example may be an application uses I2RS to configure the network according to security or monitored events. As these events are monitored on the forwarding plane and not the I2RS plane, the application breaks plane isolation.</t>
+
+                <t>In addition, applications may communicate with multiple I2RS Clients; as such, any given application may have a broader view of the current and potential states of the network and the I2RS plane itself. Because of this, any individual application could be an effective attack vector against the operation of the network, the I2RS plane, or any plane with which the I2RS plane interacts. There is little the I2RS plane can do to validate applications with which it interacts, other than to provide some broad general validations against common misconfigurations or errors. As with the separation between the management plane and the I2RS plane, this should minimally take the form of limits on information accepted, limits on the rate at which information is accepted, and rudimentary checks against intentionally formed routing loops or injecting information that would cause the control plane to fail to converge. Other forms of protection may be necessary.</t>
+
+	    </section>
+
+	    <section title="I2RS plane and Control plane">
+
+                   <t>The network control plane consists of the processes and protocols that discover topology, advertise reachability, and determine the shortest path between any location on the network and any destination. It is not anticipated there will be any interactions between the on-the-wire signalling used by the control plane. However, in some situations the I2RS system could modify information in the local databases of the control plane. This is not normally recommended, as it can bypass the normal loop free, loop free alternate, and convergence properties of the control plane. However, if the I2RS system does directly inject information into these tables, the I2RS system should ensure that loop free routing is preserved, including loop free alternates, tunnelled interfaces, virtual overlays, and other such constructions. Any information injected into the control plane directly could cause the control plane to fail to converge, resulting in a complete network outage.</t>
+
+	    </section>
+	    <section title="Recommendations">
+		    
+		    <t>To isolate I2RS transactions from other planes, it is recommended that:
+			    
+			    <list style="format REQ %d:" counter="my_count">
+				    <t>Application-to-routing system resources communications should use an isolated communication channel. Various level of isolation can be considered. The highest level of isolation may be provided by using a physically isolated network. Alternatives may also consider logical isolation; for example by using vLAN. Eventually, in virtual environment that shares a common infrastructure, encryption, for example by using TLS or IPsec, may also be used as a way to enforce isolation.</t>
+
+				    <t>The interface (like the IP address) used by the routing element to receive I2RS transactions should be a dedicated physical or logical interface. As previously, mentioned a dedicated physical interface  may contribute to a higher isolation, however logical isolation be also be considered for example by using a dedicated IP address or a dedicated port.</t>    
+<!--
+                                    <t>The I2RS Agent validates data to ensure injecting the information will not create a deadlock with any other system, nor will it create a routing loop, nor will it cause the control plane to fail to converge.</t>
+-->
+			    </list>
+		    </t>
+
+		    <t>When the I2RS Agent performs an action on a routing element, the action is performed via process(es) associated to a system user . In a typical UNIX system, the user is designated with a user id (uid) and belong to groups designated by group ids (gid). These users are dependent of the routing element's operation system and are designated I2RS System Users. Some implementation may use a I2RS System User for the I2RS Agent that proxies the different I2RS Client, other implementations may use I2RS System User for each different I2RS Clients.
+			    <list style="format REQ %d:" counter="my_count">
+
+				    <t>I2RS Agent should have permissions separate from any other entity (for example any internal system management processes or CLI processes). </t>
+
+			    </list>
+		    </t>
+
+		    <t>I2RS resource may be shared with the management plane and the control plane. It is hardly possible to prevent interactions between the planes. I2RS routing system resource management is limited to the I2RS plane. As such, update of I2RS routing system outside of the I2RS plane may be remain unnoticed unless explicitly notified to the I2RS plane. Such notification is expected to trigger synchronization of the I2RS resource state within each I2RS component. This guarantees that I2RS resource are maintained in a coherent state among the I2RS plane. In addition, depending on the I2RS resource that is updated as well as the origin of the modification performed, the I2RS Access Control policies may be impacted. More especially, a I2RS Client is more likely to update an I2RS resources that has been updated by itself, then by the management plane for example. 
+			    <list style="format REQ %d:" counter="my_count">
+
+				    <t>I2RS plane should be informed when a routing system resource is modified by a user outside the I2RS plane access. The notification is not expected to flood the I2RS plane. Instead, notification is expected to be provided to the I2RS components interacting, configuring or monitoring the routing system resource. The notification is at least provided by the I2RS Agent to the various I2RS Client, but additional mechanisms might eventually be required so I2RS Client can relay the notification to the I2RS applications.  This is designated as "I2RS resource modified out of I2RS plane". This requirements is also described in section 7.6 of <xref target="I-D.ietf-i2rs-architecture"/> for the I2RS Client. This document extends the requirement to the I2RS plane, in case future evolution of the I2RS plane.</t>
+
+				    <t>I2RS plane should define an "I2RS plane overwrite policy". Such policy defines how an I2RS is able to update and overwrite a resource set by a user outside the I2RS plane. Such hierarchy has been described in section 6.3 and 7.8 of <xref target="I-D.ietf-i2rs-architecture"/></t>
+			    </list> 
+		    </t>
+	    </section>
+    </section>
+<!--
+   <section title="I2RS Authentication and Authorization and Accountability" anchor="sec-i2rs-aaa">
+   <t>This section details the I2RS Authentication Authorization and Accounting Architecture (I2RS AAA) within the I2RS plane.</t>
+
+   <t>With the architecture specified in <xref target="I-D.ietf-i2rs-architecture"/>, an Application does not communicate directly to the I2RS Agent. Instead, the I2RS application communicates with the I2RS Client, and the I2RS Client communicates with the I2RS Agent on behalf of the Application. In some case, the I2RS Client may be associated to a single Application which means that authentication, authorization and accountability of the Application can be associated to the I2RS Client. However, in order to make the I2RS scalable, the I2RS architecture also consider the I2RS Client can act as a broker and host multiple Applications. A direct consequence is that the I2RS Agent may grant access to an Application it has not authenticated, it cannot check it is authorized, and cannot trace. These functions have been left for scalability reasons to the I2RS Client. As a result the I2RS AAA within the I2RS plane that defines access to the routing ressource by the Application is split between the I2RS AAA implemented by the I2RS Client regarding the Applications, the I2RS Agent AAA implemeneted by the I2RS AGent regarding the I2RS Client, and a trust relation between the I2RS CLients and the I2RS Agent of teh I2RS plane. </t>
+
+ 
+<t>In order to access a networking resource, the Application MUST be granted access by the I2RS Client, and the I2RS Client MUST also be granted acces to the I2RS Agent. Note that the interactions between the Applications and the I2RS Client are explicitly out of the scope of the I2RS architecture <xref target="I-D.ietf-i2rs-architecture"/>, which remains focused on the interactions between the I2RS Client and the I2RS Agent. The purpose of this section is to provide recommendation on how I2RS Clients and I2RS Agent may implement and deploy I2RS Client AAA and I2RS Agent AAA to limit the possibility that an unauthorized Application get access to the routing resource. Such recommendatiosn are expect to stregthen the trust relation between the I2RS Client an dthe I2RS Agent.</t>
+
+
+ <t>The I2RS Client AAA defines the authentication, authorization and accountability policies of all I2RS Clients within the I2RS plane. This means that each I2RS Client may only responsible to implement a subset of these policies. 
+In order to be able to enforce I2RS Client AAA, between Applications and the I2RS Client here are our recommendations regarding the Applications:
+                            <list style="format REQ %d:" counter="my_count">
+   <t>Each Application SHOULD be associated to a restricted number of I2RS Client, and I2RS Client SHOULD only serve a limited subset of Applications. The primary motivation for this recommendation is prevent architectures that consists in a single I2RS Client hosting untrusted Applications. The I2RS Client provides access to resource on its behalf and this access MUST only be granted for trusted applications. On the other hand, this does not prevent a I2RS Client to host a large number of Applications. Similarly, an Application may also require to access multiple I2RS Clients depending on the resource to be accessed.</t>
+
+    <t>Application SHOULD be provided means and methods to contact their associated I2RS Client. If the I2RS Client belongs to the Application (as a module or a library for example), or when the Application runs into a dedicated system (like a container) with a I2RS Client, it is obvious which I2RS Client the Application is associated to. On the other hand, Applications may also remotely access the I2RS Client. In this case, the Application is expected to be provided some means to be able to retrieve the necessary information to contact its associated I2RS Client. The IP address may not be appropriated in case renumbering occurs within the network or in case the traffic from Applications should be shared between multiple instances of a given I2RS Client. In this case a FQDN may be prefered.</t>  
+   <t>Applications SHOULD be uniquely identified by the I2RS Client. As multiple ways may be used for an Application to communicate with its associated I2RS Client, it is not expected that all Applications use the same conventional identifier format accross the I2RS plane. However, if all Applications are running on a dedictaed system sharing an I2RS Client, it is expected each Application may uniquely identified, for example using different system users.</t>
+ 
+    <t>When access to an I2RS Client is refused to an Application, the Application SHOULD be notified the reason as well as sufficient information so the Application may be able to retrieve the appropriated informnation.</t> 
+			    </list> 
+		    </t>
+
+<t>In order to be able to enforce I2RS Client AAA, between Applications and the I2RS Client here are our recommendations regarding the I2RS Client:
+
+                            <list style="format REQ %d:" counter="my_count">
+                             <t>I2RS Client AAA SHOULD be managed in an automated way, that is granting or revoking an Application SHOULD NOT involve manual configuration over the I2RS plane - like all the I2RS Clients.</t> 
+                             <t>I2RS Client AAA SHOULD be scalable when the number of Application grows as well as when the number of I2RS Client increases. A typical implementation of a local I2RS Client AAA may result in creating manually a system user associated to each Application. Such an approach is likely not to scale when the number of Applications increases or the number of I2RS Client increases.</t>  
+                            <t>I2RS Client SHOULD also be able to refuse a communication with an Application when the communication channel does not fullfill enough security requirements. For example, the I2RS Client should be able to reject messages over a communication channel that can be easily hijacked, like a clear text UDP channel.</t> 
+    <t>The I2RS Client SHOULD be able to log the activity of each of the Applications. These activities SHOULD also be checked against the I2RS AAA, in order to check the I2RS Client AAA is appropriately implemented.</t>
+			    </list> 
+		    </t>
+
+     <t>I2RS Client are also responsible to act as brokers, and thus to provide access to the I2RS Agent on their behalf. In other words, the I2RS Agent AAA is based on the I2RS Client, and is likely not to take the Application into account. It becomes thus a shared responsibility between the I2RS Client and the I2RS Agent to prevent a non authorized Application to acces an I2RS Agent.
+                            <list style="format REQ %d:" counter="my_count">
+                                <t>I2RS Client SHOULD limit the number of I2RS Agent they communicate with. Suppose a single I2RS Client hosts all Applications and centralizes communicatiosn with the various I2RS Agents. In case, an Application can gain priviledges, it could be granted access to an I2RS Agent. In order to limit the surface of unauthorized access to I2RS Agent, the I2RS Client is expected to host Application that share similar I2RS Agents.</t> 
+                                <t>I2RS Client SHOULD use a single identity to access an I2RS Agent. Different identities may provide different access to the I2RS Agent. In case an Application gains priviledge on the I2RS Client, it could eventually take advanatge of it to gain priviledge on the I2RS Agents. </t>
+                               <t>I2RS Agent AAA SHOULD be highly dynamic. Although the number of I2RS Clients is expected to be lower than the number of Application, as I2RS Agent provide access to the routing resource, it is of primary importance that an accesss can be granted or revoke in an efficient way. This implies that I2RS AAA is expected to be centraly managed and enable automated configuration.</t>
+			    </list> 
+                    </t>
+
+ 
+   </section>
+-->
+
+    <section title="I2RS Access Control for routing system resources" anchor="sec-i2rs-aaa">
+
+	    <t>This section provides recommendations on how I2RS Access Control policies associated to the routing system resources. These policies only apply within the I2RS plane.  More especially, the policies are associated to the Applications, the I2RS Clients and the I2RS Agents, with their associated identity and roles.</t>
+
+           <t>Note that the deployment of Applications, I2RS Client and I2RS Agent in a closed environment, should not be considered by default as a secure environment. Even for closed environment access control policies should be carefully defined to be able to, in the future to carefully extend the I2RS plane to remote Applications or remote I2RS Clients. As a result, this section always consider the case Applications and I2RS Client can be located locally, in a closed environment or distributed over open networks.</t>
+
+           <t>Although <xref target="I-D.ietf-i2rs-protocol-security-requirements"/> provides security requirements of the transport and protocol between the I2RS Client and the I2RS Agent, this section is mostly focused on access control.</t>
+  
+
+		<section title="I2RS Access Control architecture">
+
+		    <t>Applications access to routing system resource via numerous intermediaries nodes. The application communicates with an I2RS Client. In some cases, the I2RS Client is only associated to a single application, but the I2RS Client may also act as a broker. The I2RS Client, then, communicates with the I2RS Agent that may eventually access the resource. </t>
+
+		    <t>The I2RS Client broker approach provides scalability to the I2RS architecture as it avoids that each Application be registered to the I2RS Agent. Similarly, the I2RS Access Control should be able to scale numerous applications.
+
+ <list style="format REQ %d:" counter="my_count">
+	 <t>I2RS Access Control should be performed through the whole I2RS plane. It should not be enforced by the I2RS Agent only within the routing element. Instead, the I2RS Client should enforce the I2RS Client Access Control against Applications and the I2RS Agent should enforce the I2RS Agent Access Control against the I2RS Clients. Note that I2RS Client Access Control is not in the scope of the I2RS architecture <xref target="I-D.ietf-i2rs-architecture"/>, which exclusively focuses on the I2RS Agent Access Control.</t> 
+ </list>
+ </t>
+ 
+ 
+ <t>This results in a layered and hierarchical or multi-party I2RS Access Control. An application will be able to access a routing system resource only if both the I2RS Client is granted access by the I2RS Agent and the application is granted access by the I2RS Client. 
+ <list style="format REQ %d:" counter="my_count">
+     <t>When an access request to a routing resource is refused by one party (the I2RS Client or the I2RS Agent), the initiator of the request (e.g the Application) as well as all intermediaries should indicate the reason the access has not been granted as well as the entity that has rejected the request.</t>
+    <t>In order to provide coherent Access Control policies enforced by multiple parties (e.g. the I2RS Client or the I2RS Agent), theses parties should trust each others, and communication between them should also be trusted, - that is should not introduce additional vector of attacks.</t>
+ </list>
+ </t>
+	 <t>In case the I2RS Client Access Control or the I2RS Agent Access Control does not grant access to a routing system resource, the Application should be able to determine whether its request has been rejected by the I2RS Client or the I2RS Agent as well as the reason that caused the reject. More specifically, the I2RS Agent may reject the request because, for example, the I2RS Client is not an authorized I2RS Client, or because the I2RS Client does not not have enough privileges. The I2RS Client should be notified of the reason that caused the reject by the I2RS Agent, and The I2RS Client should return a message to the Application, indicating the I2RS Client is not authorized or does not have enough privileges. Similarly, if the I2RS Client does not grant the access to the Application, the I2RS Client should also inform the Application. The error message returned should be for example: "Read failure: you do not have the read permission", "Write failure: you do not have write permission" or "Write failure: resource accessed by someone else". 
+<!--Note that although multiple rejects may occur, that is both by the I2RS Client and by the I2RS Agent, only the first reject from the I2RS Client should be mandatory.-->
+This requirement has been written in a generic manner as it concerns various interactions: interactions between the application and the I2RS Client, interactions between the I2RS Client and the I2RS Agent. In the latest case, the requirement is part of the protocol security requirements addressed by <xref target="I-D.ietf-i2rs-protocol-security-requirements"/>.</t> 
+
+<t>Although <xref target="I-D.ietf-i2rs-protocol-security-requirements"/> is focused on transport security requirements between the I2RS Client and the I2RS Agent, the similar requirements may apply between the Application and the I2RS Client for a remote Application.
+  <list style="format REQ %d:" counter="my_count">
+          <t>I2RS Client or I2RS Agent SHOULD also be able to refuse a communication with an Application or an I2RS Client when the communication channel does not fulfill enough security requirements. For example, the it should be able to reject messages over a communication channel that can be easily hijacked, like a clear text UDP channel.</t> 
+  </list>
+  </t>
+
+ <t>In order to limit the number of access request that result in an error, each Application or I2RS Client may be able to retrieve the I2RS Access Control policies that applies to it. This subset of rules is designated as the "Individual I2RS Access Control policies". As these policies are subject to changes, a dynamic synchronization mechanism should be provided. However, such mechanism may be implemented with different level of completeness and dynamicity of the Individual I2RS Access Control policies. Caching requests that have been rejected may be one such variant. It remains relatively easy to implement and may avoid the complete disclosure of the Access Control policies of the I2RS Agent. In fact the relative disclosure of Access Control policies may leak confidential information in case of misconfiguration and should be balanced with the level of trust of the I2RS Client and the necessity of distributing the enforcement of the Access Control policies.</t>
+<t>
+<!--
+This may be considered as a protocol security requirement when the I2RS Client and the I2RS Agent are involved. However, for completeness of the security recommendations over the I2RS environment, they are are still listed below.
+ -->
+  <list style="format REQ %d:" counter="my_count">
+	  <t>The I2RS Client may be able to request for its I2RS Access Control subset policies to the I2RS Agent or cache requests that have been rejected by the I2RS Agent to limit forwarding unnecessary queries to the I2RS Agent.</t>
+
+	  <t>The I2RS Client may be able to be notified when its I2RS Access Control subset policies have been updated by the I2RS Agent.</t>  
+  </list>
+  </t>
+
+  <t>Similarly, for the Applications
+  <list style="format REQ %d:" counter="my_count">
+	  <t>The Applications may be able to request for its I2RS Access Control subset policies, so to limit forwarding unnecessary queries to the I2RS Client.</t>
+	  <t>The Applications may be able to subscribe a service that provides notification when its I2RS Access Control subset policies have been updated.</t>  
+  </list>
+  </t>
+
+  <t>I2RS Access Control should be appropriately be balanced between the I2RS Client and the I2RS Agent. I2RS Access Control should not solely rely only on the I2RS Client or the I2RS Agent as illustrated below:
+        <list hangIndent="6" style="hanging">
+            <t hangText="- 1) I2RS Clients are dedicated to a single Application: "> In this case, it is likely that I2RS Access Control is enforced only by the I2RS Agent, as the I2RS Client is likely to accept all access request of the application. However, it is recommended that even in this case, I2RS Client Access Control is not based on an "Allow anything from application" policy, but instead the I2RS Client specifies accesses that are enabled. In addition, the I2RS Client may sync its associated I2RS Access Control policies with the I2RS Agent to limit the number of refused access requests being sent to the I2RS Agent. The I2RS Client is expected to balance pro and cons between sync its access control policies with the I2RS Agent and simply guessing the access request to the I2RS Agent.</t>
+	    <t hangText="- 2) A single I2RS Client acts as a broker for all Applications: ">In the case the I2RS Agent has a single I2RS Client. Such architecture results in I2RS Client with high privileges, as it sums the privileges of all applications. As end-to-end authentication is not provided between the Application and the I2RS Agent, if the I2RS Client becomes corrupted, it is possible for the malicious application escalates its privileges and make the I2RS Client perform some action on behalf of the application with more privileges. This would not have been possible with end-to-end authentication. In order to mitigate such attack, the I2RS Client that acts as a broker is expected to host application with an equivalent level of privileges.</t>
+    </list>
+    </t>
+
+    <t>
+	      <list style="format REQ %d:" counter="my_count">
+		      <t>The I2RS Access Control should explicitly specify accesses that are granted. More specifically, anything not explicitly granted -- the default rule-- should be denied. </t>
+	      </list>
+      </t>
+      
+      <t>In addition to distribute the I2RS Access Control policies between I2RS Clients and I2RS Agents, I2RS Access Control policies can also be distributed within a set of I2RS Clients or a set of I2RS Agents.  
+<list style="format REQ %d:" counter="my_count">
+	<t>I2RS Clients should be distributed and act as brokers for Applications that share roughly similar permissions. This avoids ending with over privileges I2RS Client compared to hosted applications and thus discourages applications to perform privilege escalation within an I2RS Client.</t>   
+
+	<t>I2RS Agents should be avoided being granted over privileges regarding to their authorized I2RS Client. I2RS Agent should be shared by I2RS Client with roughly similar permissions. More explicitly, an I2RS Agent shared between I2RS Clients that are only provided read access to the routing system resources does not need to perform any write access, and so should not be provided these accesses. Suppose an I2RS Client requires write access to the resources. It is not recommended to grant the I2RS Agent the write access in order to satisfy a unique I2RS Client. Instead, the I2RS Client that requires write access should be connected to a I2RS Agent that is already shared by I2RS Client that requires a write access.</t>   
+</list>
+</t>
+		   
+<t>Access Control policies enforcement should be monitored in order to detect violation of the policies or detect an attack. Access Control policies enforcement  may not be performed by the I2RS Client or the I2RS Agent as violation may require a more global view of the I2RS Access Control policies. As a result, consistency check and mitigation may instead be performed by the management plane. However, I2RS Clients and I2RS Agents play a central role. 
+<list style="format REQ %d:" counter="my_count">
+    <t>I2RS Client and I2RS Agent should be able to log the various transaction they perform, as well as suspicious activities. These logs should be collected regularly and analyzed by functions that may be out of the I2RS plane.</t>
+
+
+</list>
+</t>
+
+    <t>Access Control policies should be implemented so that they remain manageable in short and longer term. This means the way they are managed today should be address future deployment and use of I2RS. 
+            <list style="format REQ %d:" counter="my_count">
+            <t>Access Control should be managed in an automated way, that
+           is granting or revoking an Application should not involve
+           manual configuration over the I2RS plane - like all the I2RS
+           Clients.</t>
+
+            <t>Access Control should be scalable when the number of
+           Application grows as well as when the number of I2RS Client
+           increases.  A typical implementation of a local I2RS Client
+           Access Control policies may result in creating manually a system user associated
+           to each Application.  Such an approach is likely not to scale
+           when the number of Applications increases or the number of
+           I2RS Client increases.</t>
+            <t>Access Control should be dynamically managed and easy to be updated. Although the number
+           of I2RS Clients is expected to be lower than the number of
+           Application, as I2RS Agent provide access to the routing
+           resource, it is of primary importance that an access can be
+           granted or revoke in an efficient way.</t>
+
+           <t>I2RS Clients and I2RS Agents should be uniquely identified in the network to enable centralized management of the I2RS Access Control policies.</t>
+            </list>
+    </t>
+  
+	    </section>
+
+	    <section title="I2RS Agent Access Control policies">
+
+<t>The I2RS Agent Access Control restricts the routing system resource access to authorized identities - possible access policies may be none, read or write. 
+The initiator of an access request to a routing resource is always an Application. However, it remains challenging for the I2RS Agent to establish its access control policies based on the application that initiates the request. First, when an I2RS Client acts as a broker, the I2RS Agent may not be able to authenticate the Application. In that sense, the I2RS Agent relies on the capability of the I2RS Client to authenticate the Applications and apply the appropriated I2RS Client Access Control. Then, an I2RS Agent may not uniquely identify a piece of software implementing an I2RS Client. In fact, an I2RS Client may be provided multiple identities which can be associated to different roles or privileges. The I2RS Client is left responsible for using them appropriately according to the Application. Finally, each I2RS Client may contact various I2RS Agent with different privileges and Access Control policies.</t>
+
+<t>This section provides recommendations on the I2RS Agent Access Control policies to keep I2RS Access Control coherent within the I2RS plane. 
+
+<!--
+Similarly, multiple I2RS Agents may be used, and different access privilege may be provided depending on the I2RS Agent used. As a result, the origin of the query may be represented in multiple ways, and each way be may associated to a specific AAA. In some cases, the origin of the I2RS query is only represented by the I2RS Client, and the I2RS Agent does not have any means to associate the request to an application. In some cases, the I2RS Agent may identify the application by the I2RS Client or via other means. In addition, there is not a single way to represent an I2RS Client, and multiple identities may be used (FQDN, public key, certificates)
+-->
+
+<list style="format REQ %d:" counter="my_count">
+        <t>I2RS Agent Access Control policies should be primarily based on the I2RS Clients as described in <xref target="I-D.ietf-i2rs-architecture"/>.</t>
+        <t> I2RS Agent Access Control policies may be based on the Application. In this case the identity of the Application MUST be authenticated by the I2RS Agent, and the secondary identity used to tag the application as defined in <xref target="I-D.ietf-i2rs-architecture"/> should be considered cautiously. The tag may be used associated only to an authenticated I2RS Client that is known to authenticate its Application.</t> 
+
+</list>
+</t>
+
+<t>The I2RS Agent Access Control policies may evolve over time as resource may also be updated outside the I2RS plane. Similarly, a given resource may be accessed by multiple I2RS users within the I2RS plane. Although this is considered as an error, depending on the I2RS Client that performed the update, the I2RS may accept or refuse to overwrite the routing system resource. 
+<list style="format REQ %d:" counter="my_count">
+	<t>The I2RS Agent should know which identity (most likely system user) performed the latest update of the routing resource. This is true for an identity inside and outside the I2RS plane, so the I2RS Agent can appropriately perform an update according to the priorities associated to the requesting identity and the identity that last updated the resource. 
+On an environment perspective, the I2RS Agent MUST be aware when the resource has been modified outside the I2RS plane, as well as its priority associated towards the I2RS plane. 
+Similar requirements exist for identities within the I2RS plane, but belongs to the protocol security requirements.</t>  
+
+	<t>the I2RS Agent should have a "I2RS Agent overwrite Policy" that indicates how identities can be prioritized. This requirements is also described in section 7.6 of <xref target="I-D.ietf-i2rs-architecture"/>. Similar requirements exist for components within the I2RS plane, but belongs to the protocol security requirements.</t>
+</list>
+</t>
+
+	    </section>
+
+
+	    <section title="I2RS Client Access Control policies">
+
+	    <t>The I2RS Client Access Control policies are responsible for authenticating the application  managing the privileges for the applications, and enforcing access control to resources by the applications.
+As a result,
+            <list style="format REQ %d:" counter="my_count">
+		    <t>I2RS Client should authenticate its applications. If the I2RS Client acts as a broker and supports multiple Applications, it should authenticate each of them. Authentication of the application may used GSSAPI, Secure RPC mechanisms.</t>
+                    <t>I2RS Client should define Access Control policies associated to each applications. An access to a routing resource by an Application should not be forwarded by the I2RS Client based on the I2RS Agent Access Control policies. The I2RS Client should first check whether the Application has sufficient privileges, and if so send an access request to the I2RS Agent. When an I2RS Client has multiple identities that are associated with different privileges. The I2RS Client Access Control policies should specify the associated I2RS Client's identities, especially, when the I2RS Agent Access Control policies are changed for a given I2RS Client's identity.</t>
+            </list>
+	    </t>
+
+<t>In case, no authentication mechanisms have being provided between the I2RS Client and the application, then I2RS Client may not act as broker, and be instead dedicated to a single application. By doing so, application authentication may rely on the I2RS authentication mechanisms between the I2RS Client and the I2RS Agent. On the other hand, although this is not recommended, the I2RS Access Control policies is only enforced by the I2RS Agent. </t>
+<!--
+The I2RS Client may only sync and cache the I2RS Agent AAA associated to its application, in order to limit the access requests to the I2RS Agent. The I2RS Client is expected to balance pro and cons between synchronization of the I2RS Agent AAA, or simply sending the request to the I2RS Agent.</t>    
+-->
+
+	    </section>
+
+
+            <section title="Application and Access Control policies">
+
+    <t>Application does not enforce access control policies. Instead these are enforced by the I2RS Clients and the I2RS Agents. This section provides recommendations for Applications in order to ease I2RS Access Control by the I2RS Client and the I2RS Agent.</t>
+
+    <t>As multiple ways may be used for an Application to
+           communicate with its associated I2RS Client, it is not
+           expected that all Applications use the same conventional
+           identifier format across the I2RS plane.  However, if all
+           Applications are running on a dedicated system sharing an
+           I2RS Client, it is expected each Application may uniquely
+           identified, for example using different system users.
+          <list style="format REQ %d:" counter="my_count">
+              <t>Applications SHOULD be uniquely identified by their associated I2RS Clients</t>
+         </list>
+    </t>
+
+    <t>The I2RS Client provides access to resource on its behalf and this
+           access should only be granted for trusted applications, 
+           or Applications with an similar level of trust.  On the
+           other hand, this does not prevent an I2RS Client to host a
+           large number of Applications.  Similarly, an Application may
+           also require to access multiple I2RS Clients depending on the
+           resource to be accessed. As I2RS Client are restricted for a subset of Applications, 
+          <list style="format REQ %d:" counter="my_count">
+              <t>Each Application SHOULD be associated to a restricted number
+           of I2RS Client</t>
+              <t>Application SHOULD be provided means and methods to contact
+           their associated I2RS Client.  If the I2RS Client belongs to
+           the Application (as a module or a library for example), or
+           when the Application runs into a dedicated system (like a
+           container) with a I2RS Client, it is obvious which I2RS
+           Client the Application is associated to.  On the other hand,
+           Applications may also remotely access the I2RS Client.  In
+           this case, the Application is expected to be provided some
+           means to be able to retrieve the necessary information to
+           contact its associated I2RS Client.  The IP address may not
+           be appropriated in case renumbering occurs within the network
+           or in case the traffic from Applications should be shared
+           between multiple instances of a given I2RS Client.  In this
+           case a FQDN may be preferred.</t>
+         </list>
+    </t>
+
+	    </section>
+
+
+    
+<!--
+	    <section title="I2RS AAA Security Domain">
+
+		    <t>I2RS Access Control policies cannot be enforced locally on the I2RS Client or the I2RS Agent. In addition to local Access Control policies enforcement, communications between the Application and the I2RS Client and between teh I2RS Client and the I2RS Agent should: 
+        <list hangIndent="6" style="hanging">
+		<t hangText="- 1) ">Available at any time, and it should be robust to potential attacks, or misbehaviors.</t>
+		<t hangText="- 2) ">Trusted.</t> 
+	</list>
+</t>
+
+<t>These characteristics are mostly the goal of a security transport layer. As such:
+	        <list style="format REQ %d:" counter="my_count">
+                    <t>I2RS communications should be based on a security transport layer.</t>
+		</list>
+	</t>
+
+            <section title="Available I2RS Communication Channel">
+		    <t>Communication is considered available if and only if all components are available as well as the communication channel itself. In order to maintain it available here are the considered aspects:
+        <list hangIndent="6" style="hanging">
+		<t hangText="- 1) ">Make communication robust to DoS by design</t>
+			<t hangText="- 2) ">	Provide active ways to mitigate an DoS attack</t>
+			<t hangText="- 3) ">	Limit damages when a DoS event occurs</t>
+		</list>
+	</t>
+	<t>Protocols used to communicate between components should not provide means that would result in a component's resource exhaustion.</t>
+       	
+	<t>If non secure transport layer is used, when possible, protocols that do not implement any mechanisms to check the origin reachability should be avoided (like UDP). Instead, if possible, protocols like TCP or SCTP with origin reachability verification should be preferred.</t>
+	
+       <t>Anti DoS mechanisms should also be considered at other layers including the application layer. In our case the application layer may be the I2RS protocols itself or the applications that are using the I2RS protocol. More specifically, it should be avoided to perform actions that generate heavy computation on a component. At least the component should be able to post-pone and re-schedule the action. Similarly, DoS by amplification should be avoided, and special attention should be given to small access request that generate massive network traffic without any control. An example of asymmetric dialogue could be the subscription of information streams like prefix announcement from OSPF. In addition, some service may also provide the ability to redirect these streams to a third party. In the case of information stream, registration by an I2RS Client may provide the possibility to redirect the stream on a shared directory, so it can be accessed by multiple I2RS Clients, while not flooding the network. In this case, special attention should be provided so the shared directory can agree based on its available resources the service subscription by the I2RS Client. Otherwise, the shared directory may become overloaded.
+	            <list style="format REQ %d:" counter="my_count">
+			    <t>Resources (CPU, memory or bandwidth) allocated to each components should be agreed between the component requesting the resource and the component providing the resources.</t>
+		    </list>
+	    </t>   
+
+	    <t>Components should be able to control the computing resource they allocate to each other components, or each actions. Based on available resource, requests should be differed, or returned an error.
+	            <list style="format REQ %d:" counter="my_count">
+			    <t>I2RS Client and I2RS Agent should implement mechanisms within their environments 
+				to mitigate DoS attacks.</t>
+		    </list>
+	    </t>
+	    <t>One alternative way to mitigate a DoS attack or event is to limit the damages when resource exhaustion happens. This can be done by appropriately group or ungroup applications.
+For example, critical applications may not share their I2RS Client with multiple other Applications. This limits the probability of I2RS Client failure for the critical application. Similarly, I2RS Agent may also be selective regarding their I2RS Client as well as to the scope of their routing system resources. In fact some, some I2RS Client may be less trusted than others and some routing system resource access may be more sensitive than the others. Note that trust of an I2RS Client is orthogonal to authentication and rather involves, for example, the quality of the hosted Applications.  
+    <list style="format REQ %d:" counter="my_count">
+	    <t>Application, I2RS Client and I2RS Agent should be distributed among the I2RS Plane to minimize the impact of a failure.</t>
+    </list>
+    </t>
+    
+    <t>Even though this should be considered, it does not address the high availability issue. In order to reduce the impact of a single I2RS Client failure, remote applications may load balance their access request against multiple I2RS Clients. Non remote I2RS Client or I2RS Agent are bound the system hosting the application or to the routing element. This makes high availability be provided by the system, and thus implementation dependent. 
+    <list style="format REQ %d:" counter="my_count">
+	    <t>I2RS Client should provide resilient and high availability for the hosted applications.</t> 
+    </list>
+    </t>
+
+	    </section>
+
+            <section title="Trusted I2RS Communications Channel">
+
+            <t>Section 2.2 of <xref target="I-D.ietf-i2rs-protocol-security-requirements"/> provides requirements to establish a secure communication between the I2RS Agent and the I2RS Client. These requirements can be generalized to any I2RS communications within the I2RS plane. This may include for example a remote application connected to the I2RS Client.</t> 
+-->
+<!--	
+		    <t>This section addresses the authorization and trust of the Communication Channel. The main purpose of this section is to provide guidance to avoid identity usurpation. More specifically, resource access request should only be issued and responded by the expected components and concern the expected resource only. 
+    <list style="format REQ %d:" counter="my_count">
+	    <t>Communications between the different components should be mutually authenticated.</t>
+	    <t>Communications between components should be protected against replay attacks.</t>
+    </list>
+    </t>
+    <t>Within the I2RS AAA Security Domain, information exchanged between the I2RS Client and the I2RS Agent or the application and the I2RS Client may leak information about the application goal, as well as its internal logic. As a result, it is recommended to isolate components communications.
+    <list style="format REQ %d:" counter="my_count">
+	    <t>Communications between components should avoid leaking information about internal logic, and thus, it is recommended to encrypt them.</t>
+    </list>
+    </t>
+    <t>When an incident occurs, one should be able to understand the reasons in order to prevent it to happen again.
+    <list style="format REQ %d:" counter="my_count">
+	    <t>Log and monitoring facilities should be provided and made available for forensic investigation.</t> 
+    </list>
+    </t>
+-->
+<!--
+	    </section>
+
+	    </section>
+-->
+
+    </section>
+    <section title="I2RS Application Isolation" anchor="sec-i2rs-application-isolation">
+	    
+	    <t>A key aspect of the I2RS architecture is the network oriented application. As these application are supposed to be independent, controlled by independent and various tenants. In addition to independent logic, these applications may be malicious. Then, these applications introduce also programmability which results in fast network settings.</t>
+	
+<t>The I2RS architecture should remain robust to these applications and make sure an application does not impact the other applications. This section discusses both security aspects related to programmability as well as application isolation in the I2RS architecture.</t>
+
+<section title="Robustness toward programmability">
+	<t>I2RS provides a programmatic interface in and out of the Internet routing system. This feature, in addition to the global network view provided by the centralized architecture comes with a few advantages in term of security.</t>
+
+	<t>The use of automation reduces configuration errors. In addition, this interface enables fast network reconfiguration. Agility provides a key advantage in term of deployment as side effect configuration may be easily addressed. Finally, it also provides facilities to monitor and mitigate an attack when the network is under attack.</t>
+
+	<t>On the other hand programmability also comes with a few drawbacks. First, applications can belong to multiple tenants with different objectives. This absence of coordination may result in unstable routing configurations such as oscillations between network configurations, and creation of loops for example. A typical example would be an application monitoring a state and changing its state. If another application performs the reverse operation, the routing system may become unstable. Data and application isolation is expected to prevent such situations to happen, however, to guarantee the network stability, constant monitoring and error detection are recommended to be activated.  
+    <list style="format REQ %d:" counter="my_count">
+	<t>The I2RS Agents should monitor constantly parts of the system for which I2RS Clients or Applications have provided requests. It should also be able to detect I2RS Clients or Applications that lead the routing system in an unstable state. Monitoring consists at least in logging events and eventually provide notifications or alerts to the management plane in case, something has been detected. The management plane is in charge of collecting the logs, the notifications and eventually to consider the appropriated actions. A typical action may be the update of I2RS Access Control policies for example or re-configuring routing elements.</t>
+    </list>	
+    </t>
+
+</section>
+
+<section title="Application Isolation">
+	<section title="DoS">
+		<t>Requirements for robustness to Dos Attacks have been addressed in the Communication channel section <xref target="I-D.ietf-i2rs-architecture"/>.</t>
+
+		<t>The I2RS interface is used by application to interact with the routing states. As the I2RS Agent is shared between multiple applications, one application can prevent an application by performing DoS or DDoS attacks on the I2RS Agent or on the network.
+DoS attack targeting the I2RS Agent would consist in providing requests that keep the I2RS Agent busy for a long time. This may involve heavy computation by the I2RS Agent for example to blocking operations like disk access. In addition, DoS attacks targeting the network may use specific commands like monitoring stream over the network. Then, DoS attack may be also targeting the application directly by performing reflection attacks. Such an attack could be performed by indicating the target application as the target for some information like the listing of the RIB. Reflection may be performed at various levels and can be based on the use of UDP or at the service level like redirection of information to a specific repository.
+    <list style="format REQ %d:" counter="my_count">
+	    <t>In order to prevent DoS, it is recommended the I2RS Agent controls the resources allocated to each I2RS Clients. I2RS Client that acts as broker may not be protected as efficiently against these attacks unless they perform resource controls themselves of their hosted applications.</t> 
+			    <t>I2RS Agent does not make response redirection possible unless the redirection is previously validated and agreed by the destination.</t> 
+
+			    <t>avoid the use of underlying protocols that are not robust to reflection attacks.</t> 
+		    </list>
+	    </t>
+	</section>
+	<section title="Application Control">
+
+		<t>Requirements for Application Control have been addressed in the I2RS plane isolation as well as in the trusted Communication Channel sections.</t>
+
+		<t>Applications use the I2RS interface in order to update the routing system. These updates may be driven by behavior on the forwarding plane or any external behaviors. In this case, correlating observation to the I2RS traffic may enable to derive the application logic. Once the application logic has been derived, a malicious application may generate traffic or any event in the network in order to activate the alternate application.
+   
+		    <list style="format REQ %d:" counter="my_count">
+			    <t>Application logic should remain opaque to external listeners. Application logic may be partly hidden by encrypting the communication between the I2RS Client and the I2RS Agent. Additional ways to obfuscate the communications may involve sending random messages of various sizes. Such strategies have to be balanced with network load. Note that I2RS Client broker are more likely to hide the application logic compared to I2RS Client associated to a single application.</t>
+		    </list>
+	    </t>
+
+		
+	</section>
+
+</section>
+
+    </section>
+
+      <section title="Security Considerations">
+        <t>The whole document is about security. 
+        </t>
+      </section>
+
+    <!-- section anchor="IANA" title="IANA Considerations" -->
+
+      <section title="Privacy Considerations">
+        <t>
+        </t>
+      </section>
+
+    <!-- section anchor="IANA" title="IANA Considerations" -->
+    <section title="IANA Considerations">
+      <t></t>
+    </section>
+
+    <!-- section anchor="Acknowledgments" title="Acknowledgments" -->
+    <section title="Acknowledgments">
+      <t>A number of people provided a significant amount of helping comments and reviews. Among them the authors would like to thank Russ White, Russ Housley, Thomas Nadeau, Juergen Schoenwaelder, Jeffrey Haas, Alia Atlas, Linda Dunbar 
+      </t>
+    </section>
+<!--
+    <section title="LOG">
+    <section title="version01">
+    
+
+    <t>Based on the discussion with Thomas Nadeau, Juergen Schoenwaelder, Jeffrey Haas, Alia Atlas REQ 3 has been removed. "The I2RS Client SHOULD be able to log the activity of each of the Applications. These activities SHOULD also be checked against the I2RS AAA, in order to check the I2RS Client AAA is appropriately implemented."</t>
+
+    </section>
+    </section>
+-->
+  </middle>
+  <back>
+    <references title="Normative References">
+        &rfc2119;     
+    </references>
+    <references title="Informative References">
+        &I-D.ietf-i2rs-architecture;  
+        &I-D.ietf-i2rs-protocol-security-requirements;   
+    </references>
+  </back>
+</rfc>
