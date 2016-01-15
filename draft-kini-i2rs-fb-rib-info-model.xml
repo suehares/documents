@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC0768 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.0768.xml">
+<!ENTITY RFC0791 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.0791.xml">
+<!ENTITY RFC0792 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.0792.xml">
+<!ENTITY RFC0793 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.0793.xml">
+<!ENTITY RFC2460 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2460.xml">
+<!ENTITY RFC2460 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2460.xml">
+<!ENTITY RFC3060 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3060.xml">
+<!ENTITY RFC3460 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3460.xml">
+<!ENTITY RFC3644 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3644.xml">
+<!ENTITY RFC4960 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4960.xml">
+<!ENTITY RFC5575 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5575.xml">
+<!ENTITY I-D.ietf-i2rs-architecture SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-architecture.xml">
+<!ENTITY I-D.ietf-i2rs-rib-info-model SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-rib-info-model.xml">
+<!ENTITY I-D.ietf-i2rs-rib-data-model SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-rib-data-model.xml">
+<!ENTITY I-D.ietf-netmod-acl-model SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-netmod-acl-model.xml">
+<!ENTITY I-D.hares-i2rs-bnp-info-model SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.hares-i2rs-bnp-info-model.xml">
+<!ENTITY I-D.ietf-i2rs-usecase-reqs-summary SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.hares-i2rs-usecase-reqs-summary.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc toc="yes" ?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="yes"?>
+<?rfc compact="yes" ?>
+<?rfc subcompact="no" ?>
+<?rfc iprnotified="no" ?>
+<?rfc strict="no" ?>
+<rfc category="std" docName="draft-kini-i2rs-fb-rib-info-model-02"  ipr="trust200902">
+  <front>
+    <title abbrev="Filter-Base RIB IM">Filter-Based RIB Information Model </title>
+
+	<author fullname="Sriganesh Kini" initials="S." surname="Kini">
+      <organization>Ericsson</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city> </city>
+          <country></country>
+        </postal>
+        <email>sriganesh.kini@ericsson.com</email>
+      </address>
+    </author>
+	    <author fullname="Susan Hares" initials="S." surname="Hares">
+      <organization>Huawei</organization>
+      <address>
+        <postal>
+          <street>7453 Hickory Hill</street>
+          <city>Saline</city>
+          <region>MI</region>
+          <code>48176</code>
+          <country>USA</country>
+        </postal>
+        <email>shares@ndzh.com</email>
+      </address>
+    </author>
+	    <author fullname="Linda Dunbar" initials="L." surname="Dunbar">
+      <organization>Huawei</organization>
+      <address>
+        <postal>
+          <street> </street>
+          <city> </city>
+          <region> </region>
+          <code> </code>
+          <country>USA</country>
+        </postal>
+        <email>linda.dunbar@huawei.com</email>
+      </address>
+    </author>
+
+    <author fullname="Anoop Ghanwani" initials="A." surname="Ghanwani">
+      <organization>Dell</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city> </city>
+          <country></country>
+        </postal>
+        <email>anoop@alumni.duke.edu</email>
+      </address>
+    </author>
+    <author fullname="Ram Krishnan" initials="R." surname="Krishnan">
+      <organization>Dell</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city></city>
+          <country></country>
+        </postal>
+        <email>Ramkri123@gmail.com</email>
+      </address>
+    </author>
+    <author fullname="Dean Bogdanovic" initials="D." surname="Bogdanovic">
+      <organization>Juniper Networks</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city>Westford, MA</city>
+          <country></country>
+        </postal>
+        <email>deanb@juniper.net</email>
+      </address>
+    </author>
+    <author fullname="Jeff Tantsura" initials="J." surname="Tantsura">
+      <organization>Ericsson</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city></city>
+          <country></country>
+        </postal>
+        <email>jeff.tantsura@ericsson.com</email>
+      </address>
+    </author>
+	    <author fullname="Russ White" initials="R." surname="White">
+      <organization>Ericsson</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city></city>
+          <country></country>
+        </postal>
+        <email>russ@riw.us</email>
+      </address>
+    </author>
+    <date year="2015" />
+    <area>Routing Area</area>
+    <workgroup>I2RS working group</workgroup>
+    <keyword>RFC</keyword>
+    <keyword>Request for Comments</keyword>
+    <keyword>I-D</keyword>
+    <keyword>Internet-Draft</keyword>
+    <keyword>I2RS</keyword>
+    <abstract>
+	<t>This document defines an information model  for the I2RS 
+	Filter-based Routing Information Base (RIB) Yang model. A routing system uses
+	the Filter-based RIBto program FIB entries that process incoming
+	packets by matching on multiple fields within the packet and then performing
+	a specified action on it.  The FB-RIB can also specify an action to forward 
+	the packet according to the FIB entries programmed
+	 using the RIBs of its routing instance.</t>
+	 </abstract>
+  </front>
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <t>The Interface to the Routing System (I2RS) <xref target="I-D.ietf-i2rs-architecture"></xref> 
+	  architecture provides dynamic read and write access to the information and state within the routing
+      elements. The I2RS client interacts with the I2RS agent in one or more network routing systems. 
+	  </t>
+     <t> This document provides an information module for the I2RS filter Based Routing Information Base
+	 (FB-RIB) and describes the I2RS interaction with routing filters within a routing element. 
+	 </t>
+	 <section title="Definition of I2RS Filter Based RIB">
+	 <t>Filter-based routing is a technique used to make packet forwarding decisions
+     based on a filter that is matched to the incoming packets and the specified action.
+	 It should be noted that that this is distinct from the static routes in the RIB
+	 <xref target="I-D.ietf-i2rs-rib-info-model"></xref> where the routing is destination 
+	 ddress based.  
+	 </t>
+	<t> A Filter-Based RIB (Routing Information Base) is contained in a routing
+	  instance (defined in <xref target="I-D.ietf-i2rs-rib-info-model"></xref>). 
+	  It contains a list of filters (match-action conditions), a list of interface the filter-based
+      forwarding operates on. Filter-based RIBs (FB-RIBs) operate only on the interface the
+       FB-RIB are configured on.
+	  </t> 
+	<t>A Filter Based RIB uses Event-Condition-Action policy.
+	A Filter-based RIB entry specifies matches
+	 on fields in a packet (which may include layer 2 fields, IP header fields, transport or 
+	 application fields) or size of the packet or interface received on. 
+	The matches are contained in an ordered list of filters which 
+	contain pairs of match condition-action (aka event-condition-action).
+	</t>
+	<t>
+	If all matches fail, default action is to forward the packet using 
+	FIB entries that were programmed by the Routing Informational Base
+	(RIB) manager described
+	in <xref target="I-D.ietf-i2rs-rib-info-model"></xref>. 
+	</t>
+	<t>	Actions in the condition-action pair may impact forwarding or 
+	set something in the packet that will impact forwarding.
+	Policy actions are typically applied before applying QoS constraints
+    since policy actions may override QoS constraint.
+	 </t>
+	<t>
+    The Filter-Based RIB resides in ephemeral state as does the I2RS RIB and I2RS
+	topology models.
+	 </t>
+	 </section>
+	 <section title="ECA Policy Supported">
+	<t> The filter based-RIB uses event-condition-action policy (ECA) rules.
+	 The following policies are used in this version of the yang module:
+	<list style="symbols"> 
+	<t> Access lists (ACLs) <xref target="I-D.ietf-netmod-acl-model"></xref>
+	</t> 
+ 	<t> Basic network filters <xref target="I-D.hares-i2rs-bnp-info-model"></xref>
+	</t>
+	</list>
+	</t>
+	<t> 
+	Proprietary filters may augment these IETF defined ECA rules.
+	The IETF filters support basic filtering plus QOS and load balancing.
+    Below is an example set of match conditions on ingreessI2RS
+	that the basic I2RS FB-RIB can support. 	
+	<figure>
+	<artwork>
+              Ingress filter Matches (for ECA policy)
+                           |
+                           |
+       +-------+--------+--+------+-----+------+----+-----+
+       |       |        |         |     |      |    |     |
+       |       |        |         |     |      |    |     |
+   L3-Header L2-header L4-header VLAN  VN ID  size event ...  
+
+  Figure 1: Possible matching conditions for basic network filters 
+	</artwork>
+	</figure>
+	</t> 
+	</section>
+	<section title="I2RS Use Cases Suported by Filter-Based RIB">
+	<t> The I2RS use cases which benefit from Filter-Based Routing are:
+	<list style="symbols">
+	<t>	Protocol independent Use cases and large flow use cases
+	 described in <xref target="I-D.hares-i2rs-usecase-reqs-summary"></xref>. 
+	</t> 
+	<t>the use cases of steering traffic to their designated service 
+	functions that are different than the packet's destinations, and </t>
+	<t>large flow use cases described in 
+	<xref target="I-D.hares-i2rs-usecase-reqs-summary"></xref> </t>
+	</list> 
+	</t>	   
+    </section>
+	</section>
+    <section title="Definitions and Acronyms">
+	      <t>
+		  <list style="hanging"> 
+          <t hangText="CLI"><vspace blankLines="1" /> Command Line Interface</t>
+	      <t hangText="FB-RIB"><vspace blankLines="1" /> Filter-Based Routing Information Base</t> 
+		  <t hangText="FB-Route"><vspace blankLines="1" />  
+	      The policy rules in the  filter-based RIB are prescriptive of the Event-Condition-Action
+		  form which is often represented by if Condition then action". </t>
+		  <t hangText="Policy Group"><vspace blankLines="1" /> Policy Groups are groups of
+		  policy rules. The groups of policy in the basic network policy
+		  <xref target="I-D.hares-i2rs-bnp-info-model"></xref> allow grouping
+		  of policy by name. This name allow easier management of 
+		  customer-based or provider based filters. 
+		  </t>
+		  <t hangText="RIB IM "><vspace blankLines="1" /> RIB Informational Model (RIB IM) 
+		  <xref target="I-D.ietf-i2rs-rib-info-model"></xref>   </t>
+		  <t hangText="Routing instance"><vspace blankLines="1" /> A routing instance, 
+		  in the context of the FB-FIB is a
+           collection of RIBs, interfaces, and routing parameters.  A routing
+           instance creates a logical slice of the router and allows different
+           logical slices; across a set of routers; to communicate with each
+           other.  </t>
+        </list>
+		</t>
+    </section>
+   
+    <section title="Filter-Based-RIB module ">
+		<t> A Filter-Based RIB (FB-RIB)contains an ordered set of filter routes where each
+		filter-route is a match condition followed by an action. An FB-RIB is contained in a
+		routing-instance that is defined in <xref target="I-D.ietf-i2rs-rib-info-model"></xref> 
+		and whose data modelling is done in <xref target="I-D.ietf-i2rs-rib-data-model"></xref>. 
+		An FB-RIB has a list of interfaces that is a subset of the list of interfaces in the
+		routing-instance that it is contained in. An incoming packet on an interface belonging
+		to a FB-RIB is first handled by the FIB programmed using that FB-RIB.
+		If no match action succeeds, then the packet is forwarded using the FIB programmed using
+		the RIB of that routing instance. 
+        </t>
+		<t>
+		An ordered set of filters implies that the insertion of a filter route into a FB-RIB
+		MUST provide the ability to insert a filter route at any specific position and 
+		delete of a filter-based route at a specific position.  The ability to change a filter route
+		at a specific position combines these two functions (delete an existing filter route
+		rule and add a new policy rule). </t>
+		<t>Each FB-RIB is contained within a routing instance, but 
+        one routing instance (named by an INSTANCE_NAME) can contain multiple FB-RIBs.
+		Each routing instance is associated with a set of interfaces, a router-id, 
+	    and list of FB-RIBs. Each interface
+		can be associated with at most one FB RIB. 
+		</t> 
+		<t> The processing within the FB-RIB process
+		within the routing system is expected to do the following:
+		<list style="symbols">
+		<t> When a packet successfully matches match term/entry in a filter-route, the corresponding
+		rule-actions are applied.</t>
+		<t>If a packet does not match the match term/entry in the filter route, the filter route processing goes to the next 
+		term/entry in the order, and looks for a match, within the current filter or goes to the 
+		next filter in the list.  This continues until either a filter route match term/entry is successfully
+		matched, or no more filters in the list exists.  </t>
+		<t>If no match has been found within list of filters in FB-RIB list, then the packet will be
+		forwarded using the I2RS RIB specified by the FB-RIB if one exists.  If no I2RS RIB is specified,
+ 		the packet will be discarded. </t>
+		</list>
+		</t> 
+		<t> 
+	<figure>
+     <artwork> 
+         +-------------------------------+
+         |     routing instance          |
+         +-----------|-------------------+
+                     |                
+                     |                
+            +--------|----+  
+            |FB-RIB *list |  
+            |             |  
+            +--|----------+  
+               |             
+               ^
+              /|\ 
+         +-----^-----------------------+
+         |        FB-RIB               |              
+         +----|------|-------------|---+  
+              |  +---|----+  +-----|-----+
+              |  | I2 RIB |  |interface* |
+              |  | Name   |  | (Names)   |
+              |  +--------+  +-----------+
+			  |
+         +-----------------------+  
+         | FB-RIB Ordered List   | 
+         |   of filter rules     |
+         +-----------|-----------+ 	   
+                     | Filter policy list-entries
+                     | entries depend on type
+                     |  (ACL, Routing, QOS, SFC)  
+         +-----------|-----------+
+         |    Groups             |
+         +-----------|-----------+
+                     | Groups depend on type  
+         +-----------|--------------+			 
+         |      Rules (by type)     |
+         |(ordered list of rules of |
+         | the form match-action)   |  
+         +--------------------------+			 
+                     | Entries depend on type  
+ 
+ 
+	   Figure 2: Routing instance with FB-RIB  
+			</artwork>
+          </figure>
+		  </t>
+	<t> 
+	<figure>
+	<artwork>
+Policy definitions
+	
+ACL types: 
+Policy level access-lists 	
+group level: access_lists: access-list-entries
+rule level:  access_lists: access-list-entries:
+               access-list-entry
+
+ 
+BNP QOS 
+Policy level: bnp-eca: bnp-policy-set 
+group level:  bnp-eca: bnp-policy-set:rule-group-list:rule-group
+rule level:   bnp-eca: bnp-policy-set:rule-group-list:rule-group
+              policy-rule-list: policy-rule 		
+ 
+Note: The ACL policy definitions do not provide sufficient
+       depth for the I2RS Filter RIB, but 
+	   are provided here for early implementations. 
+ 
+Figure 3 			  
+ 
+    </artwork>
+    </figure>
+	 </t>
+	 <section title="FB-RIB entries"> 
+   <t> The FB-RIB entries associated with each FB-RIB in a routing instance are:  
+	<list style="hanging">
+		<t hangText="instance-name (FB-FIB-instance-name)"><vspace blankLines="1" /> Name of Routing instance </t>
+		<t hangText="router-id (FB-RIB-router-id)"><vspace blankLines="1" /> router id associated 
+		with the FB-RIB function of the Routing instance </t>
+		<t hangText="Interface_list(FB-RIB-interface)"><vspace blankLines="1" /> A list of interfaces 
+		 that all of the FB-RIB RIBs operate over.  This list must be a subset of the 
+		 interface_list associated with the routing instance.  
+		</t>
+	    <t hangText="Default RIB"><vspace blankLines="1" /> A RIB contained 
+		in the same routing instance that can be used to forward packets 
+		when the FIB entries in the FB-RIB list do not match the packets.
+		This Default-RIB forwards based on destination based routing. </t>
+		<t hangText="FB-RIB Order list of policy (FB-FIB-O-Filters"><vspace blankLines="1" />  ordered list of 
+		filter rules of the form in <xref target="I-D.hares-i2rs-bnp-info-model"></xref> </t>
+		</list> 
+		</t> 
+		<t> 
+		The Top-level Yang structure for the FB-RIB is: 
+		  <figure>
+            <artwork>
+ module: FB-RIB
+ +--FB-RIB-module
+    +--rw FB-RIB-instance-name 
+    +--rw RB-RIB-router-id 
+    |  uses rt:router-id
+    +--rw FB-RIB*  [rib-name]
+    |  +--rw rib-Name
+    |  +--rw rib-afi
+    |  +--rw fb-rib-intf* if:inteface-ref
+    |  +--rw default-I2RS-RIB
+    |  |  +--RIB-name
+    |  |    uses i2rs-rib:name 
+    |  +--rw fb-rib-status-info 
+    |  +--rw fb-rib-update-ref uint64
+    |  +--rw fb-rib-Group* 
+          +-rw filter-type  // for group
+          +-rw order-number // for group 	
+            + choice (filter-type)	
+              +-case: acl
+               uses: acl: access_lists: access-list-entries
+			  // operational status augment to group  
+               augments: access_lists: access-list-entries
+               uses fb-rib-group-order_status;
+				
+           // operational status augment to individual ACL 
+               augments: access_lists:access-list-entries:
+			             access-list-entry
+			    uses fb-rib-rule-order-status;        			
+				
+            +--case: bnp-eca Rules 
+               uses bnp-eca: bnp-policy-set
+                 augments bnp-eca:bnp-policy-set:group-list:group
+                     uses fb-rib-group-order_status
+                 augment bnp-eca:bnp-policy-set:group-list:group:rule
+                     uses fb-rib-rule-order_status				 
+			
+		  Figure 4: FB RIB Yang Structure   
+			</artwork>
+          </figure>
+		  </t> 
+	</section> 
+   <section title="Relationship between RB-RIB Rule Model and RIB Information Model">
+          <t> The I2RS RIB module is described in <xref target="I-D.ietf-i2rs-rib-info-model"></xref>
+		  and <xref target="I-D.ietf-i2rs-rib-data-model"></xref>.
+		  The I2RS RIB contains a collection of RIBs with the following information per instance: 
+		     <list style="symbols">
+              <t>The set of interfaces indicates which interfaces are
+              associated with this routing instance. </t>
+              <t>The RIBs specify how incoming traffic is to be forwarded
+              based on destination (E.g. RIB and FB-RIB). </t>
+              <t>The routing parameters control the information in the
+              RIBs.</t>
+            </list>
+	      </t>
+		  <t>
+		  A routing instance may have both an I2RS RIB modules and I2RS FB-FIB modules
+          associated with it.  
+		</t>
+          <t>FB-RIB and RIB can not be used at the same time, which means:
+			<list style="symbols">
+              <t>If a router doesn’t support filter-based routing, a router
+              MUST use RIB and MUST not use FB-RIB.</t>
+              <t>If a router supports filter-based routing:<list>
+                  <t>FB-RIB is used </t>
+				  <t>Multiple FB-RIBs may exist within a routing instance </t>
+				  <t>An interface can be associated with at most one FB-RIB </t> 
+                  <t>The Default RIB for a FB-RIB is used if several criteria beyond destination
+                  address is not matched.</t>
+                </list></t>
+            </list>
+			</t>
+        </section>
+	</section>
+    <section anchor="IANA" title="IANA Considerations">
+      <t>TBD.</t>
+    </section>
+
+    <section title="Security Considerations">
+      <t>A I2RS RIB is ephemeral data store that will 
+ dyanamically change traffic paths set by the routing configuration.
+ An I2RS FB-RIB provides dynamic Event-Condition-Action policy that
+ will further change the operation of forwarding by allow dyanmic 
+ policy and ephemeral RIBs to alter the traffic paths set by 
+ routing configuration.  Care must be taken in deployments to
+ use the appropriate security and operational control to make 
+ use of the tools the I2RS RIB and I2RS FB-RIB provide. 
+ </t>
+    </section>
+  </middle>
+  <back>
+    <references title="Normative References:">
+	 &I-D.ietf-i2rs-architecture;
+     &I-D.ietf-i2rs-rib-info-model;
+	 &I-D.ietf-i2rs-rib-data-model;
+	 &I-D.ietf-netmod-acl-model; 
+	 &I-D.hares-i2rs-bnp-info-model;
+	</references>
+	
+    <references title="Informative References">
+      &RFC2119;
+	  &I-D.ietf-i2rs-usecase-reqs-summary;
+	 
+	  
+    </references>
+  </back>
+</rfc>
