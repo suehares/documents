@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC6020 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml">
+<!ENTITY RFC6241 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6241.xml">
+<!ENTITY RFC6536 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6536.xml">
+<!ENTITY I-D.ietf-i2rs-architecture SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-architecture.xml">
+<!ENTITY I-D.ietf-i2rs-rib-info-model SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-rib-info-model.xml">
+<!ENTITY I-D.ietf-netmod-acl-model SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-netmod-acl-model.xml">
+<!ENTITY I-D.ietf-i2rs-traceability SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-traceability.xml">
+<!ENTITY I-D.ietf-i2rs-usecase-reqs-summary SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-usecase-reqs-summary.xml">
+<!ENTITY I-D.ietf-i2rs-pub-sub-requirements SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-i2rs-pub-sub-requirements.xml">
+<!ENTITY I-D.hares-i2rs-auth-trans SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.hares-i2rs-auth-trans.xml">
+<!ENTITY I-D.ietf-netmod-yang-metadata SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-netmod-yang-metadata.xml">
+<!ENTITY I-D.ietf-netconf-restconf SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-netconf-restconf.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc toc="yes" ?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="yes"?>
+<?rfc compact="yes" ?>
+<?rfc subcompact="no" ?>
+<?rfc iprnotified="no" ?>
+<?rfc strict="no" ?>
+<rfc category="std" docName="draft-ietf-i2rs-ephemeral-state-02"  ipr="trust200902">
+  <front>
+    <title abbrev="I2RS Ephemeral State Requirements">I2RS Ephemeral State Requirements </title>
+
+	<author fullname="Jeff Haas" initials="J." surname="Haas">
+      <organization>Juniper</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city> </city>
+          <country></country>
+        </postal>
+        <email>jhaas@juniper.net</email>
+      </address>
+    </author>
+	<author fullname="Susan Hares" initials="S." surname="Hares">
+	<organization> Huawei </organization>
+	<address>
+	  <postal>
+	   <street></street>
+	    <city>Saline</city>
+		<country>US</country>
+	  </postal>
+	 <email>shares@ndzh.com </email>
+	</address>
+	</author>
+	 
+    <date year="2015" />
+    <area>Routing Area</area>
+    <workgroup>I2RS working group</workgroup>
+    <keyword>RFC</keyword>
+    <keyword>Request for Comments</keyword>
+    <keyword>I-D</keyword>
+    <keyword>Internet-Draft</keyword>
+    <keyword>I2RS</keyword>
+    <abstract>
+      <t>This document covers requests to the netmod and netconf Working
+   Groups for functionality to support the ephemeral state requirements
+   to implement the I2RS architecture. </t>
+	 </abstract>
+  </front>
+  <middle>
+<section anchor="intro" title="Introduction">
+   <t>The Interface to the Routing System (I2RS) Working Group is chartered
+   with providing architecture and mechanisms to inject into and
+   retrieve information from the routing system.  The I2RS Architecture
+   document <xref target="I-D.ietf-i2rs-architecture"></xref> abstractly documents a number
+   of requirements for implementing the I2RS requirements.</t>
+   <t>
+   The I2RS Working Group has chosen to use the YANG data modeling
+   language <xref target="RFC6020"></xref> as the basis to implement its mechanisms.
+   </t>
+   <t> 
+   Additionally, the I2RS Working group has chosen to use the NETCONF
+   <xref target="RFC6241"></xref> and its similar but lighter-weight relative RESTCONF
+   <xref target="I-D.ietf-netconf-restconf"></xref> as the protocols for carrying I2RS.
+   </t>
+   <t>
+   While YANG, NETCONF and RESTCONF are a good starting basis for I2RS,
+   there are some things needed from each of them in order for I2RS to
+   be implemented.
+	 </t>
+	</section>
+<section title="Review of Requirements from I2RS architecture document"> 
+ <t> The following are ten requirements that 
+ <xref target="I-D.ietf-i2rs-architecture"></xref>
+  contains which are important high level requirements:  
+<list style="numbers">
+<t>The I2RS protocol SHOULD support highly reliable notifications (but
+not perfectly reliable notifications) from an I2RS agent to an  I2RS client. </t>
+ <t>The I2RS protocol SHOULD support a high bandwidth, asynchronous
+interface, with real-time guarantees on getting data from an I2RS  agent by
+an I2RS client. </t>
+<t> The I2RS protocol will operate on data models which may be protocol
+independent or protocol dependent.  </t>
+<t> I2RS Agent needs to record the client identity when a node is created or modified. 
+The I2RS Agent needs to be able to read the client identity of a node and 
+use the client identity's associated priority to resolve conflicts.   
+The secondary identity is useful for traceability and may also be recorded.</t>
+<t>Client identity will have only one priority for the client identity. A
+collision on writes is considered an error, but priority is utilized to
+compare requests from two different clients in order to modify an existing
+node entry.  Only an entry from a client which is higher priority can modify
+an existing entry (First entry wins). Priority only has meaning at the time
+of use.</t>
+<t>The Agent identity and the Client identity should be passed outside of
+the I2RS protocol in a authentication and authorization  protocol (AAA).
+Client priority may be passed in the AAA protocol.  The values of identities
+are originally set by operators, and not  standardized. </t>
+<t>An I2RS Client and I2RS Agent mutually authenticate each other based on
+pre-established authenticated identities. </t>
+<t>Secondary identity data is read-only meta-data that is recorded by the
+I2RS agent associated with a data model's node is written, updated or
+deleted. Just like the primary identity, the secondary identity is only recorded when
+the data node is written or updated or deleted</t>
+<t>I2RS agent can have a lower priority I2RS client attempting to modify
+a higher priority client's entry in a data model.  The filtering out of
+lower priority clients attempting to write or modify a higher priority
+client's entry in a data model SHOULD be effectively handled and not put an
+undue strain on the I2RS agent. Note:  Jeff's suggests that priority is kept at the NACM at the client level
+(rather than the path level or the group level) will allow these lower
+priority clients to be filtered out using an extended NACM approach. This is
+only a suggestion of a method to provide the requirement 9.  
+</t>
+<t>The I2RS protocol MUST support the use of a secure transport. However, 
+certain functions such as notifications MAY use a non-secure transport.  
+Each model or service (notification, logging) must define within the model or 
+service the valid uses of a non-secure transport.</t>
+</list>
+</t>
+</section>
+ <section title="Ephemeral State Requirements"> 
+<section title="Persistence">
+   <t> Ephemeral-REQ-01: I2RS requires ephemeral state; i.e. state that does not persist
+    across reboots. If state must be restored, it should be done solely
+    by replay actions from the I2RS client via the I2RS agent. </t>
+   <t>While at first glance this may seem equivalent to the writable-
+   running datastore in NETCONF, running-config can be copied to a
+   persistent data store, like startup config.  I2RS ephemeral state
+   MUST NOT be persisted. </t>
+</section>
+ <section title="Constraints">
+   <t>Ephemeral-REQ-02: Non-ephemeral state MUST NOT refer to 
+   ephemeral state for constraint purposes; 
+   it SHALL be considered a validation error if it does. </t>
+   
+   <t>Ephemeral-REQ-03: Ephemeral state must be able to utilized
+   temporary operational state which (MPLS LSP-ID or a BGP IN-RIB) as a constraints. 
+   </t>
+   <t>Ephemeral-REQ-04: Ephemeral state MAY refer to non-ephemeral state 
+   for purposes of implementing constraints.  The designer of 
+   ephemeral state modules are advised that such constraints 
+   may impact the speed of processing
+   ephemeral state commits and should avoid them when speed is
+   essential.</t>
+ </section>
+<section title="Hierarchy">
+	<t>Ephemeral-REQ-05: The ability to add on an object
+	(or a hierarchy of objects) that have the property of
+	being ephemeral. An object needs to be able to have (both) 
+	the property of being writable and the property of 
+	the data being ephemeral (or non-ephemeral). </t>
+</section> 
+<section title="changes to YANG">
+<t>Ephemeral-REQ-06: Yang MUST have a way to 
+indicate in a data model that nodes have the following 
+properties: ephemeral, writable/not-writable, status/configuration.
+</t>
+</section>
+<section title="Minimal sub-set of Changes to NETCONF">
+	<t>
+	Ephemeral-REQ-07: The minimal set of changes are:  (TBD).	
+    </t>
+	<t>Potential set: TBD </t>
+	<t>Note: I2RS protocol design team is working to 
+	complete this set of minimal changes.</t>
+ </section>
+ <section title="Requirements regarding Identity, Secondary-Identity and Priority">
+ <section title="Identity Requirements">
+ <t>Ephemeral-REQ-08:Clients shall have identifiers, and secondary identifiers.
+ </t>
+  <t>Explanation:</t>
+  <t>I2RS requires clients to have an identifier.  This identifier will be
+   used by the Agent authentication mechanism over the appropriate
+   protocol. </t>
+   <t>The Secondary identities can be carried as part of RPC or meta-data.  
+	The primary purpose of the secondary identity is for traceability information
+	which logs (who modifies certain nodes).  This secondary identity is an opaque value.  
+	<xref target="I-D.ietf-i2rs-traceability"></xref> provides an 
+	example of how the secondary identity can be used for traceability.
+   </t>
+ </section>
+ <section title="Priority Requirements">
+   <t> To support Multi-Headed Control, I2RS requires that there be a
+   decidable means of arbitrating the correct state of data when
+   multiple clients attempt to manipulate the same piece of data.  This
+   is done via a priority mechanism with the highest priority winning.
+   This priority is per-client.
+  </t>
+   <t>Ephemeral-REQ-09: The data nodes MAY store I2RS client identity and not
+   the effective priority at the time the data node is stored. 
+   The I2RS Client MUST have one priority at a time. 
+   The priority MAY be dynamically changed by AAA, but the exact actions
+   are part of the protocol definition as long as Collisions are handled 
+   as described in Ephemeral-REQ-10, Ephemeral-REQ-11, and Ephemeral-REQ-12. </t>
+   <t>Ephemeral-REQ-10: When a collision occurs as two clients are trying 
+   to write the same data node, this collision is considered an error 
+   and priorities were created to give a deterministic result.
+   When there is a collision, a notification MUST BE 
+   sent to the original client to give the original client a chance
+   to deal with the issues surrounding the collision.  
+   The original client may need to fix their state. 
+   </t> 
+   <t>Ephemeral-REQ-11: The requirement to support
+   multi-headed control is required for collisions and the priority
+   resolution of collisions. Multi-headed control is not tied to 
+   ephemeral state. I2RS is not mandating how AAA
+   supports priority. Mechanisms which prevent collisions of
+   two clients trying the same node of data are the focus.  </t>
+   <t>Ephemeral-REQ-12: If two clients have the same priority, 
+   the architecture says the first one wins. The I2RS protocol 
+   has this requirement to prevent was the oscillation 
+   between clients. If one uses the last wins scenario, you may oscillate.
+   That was our opinion, but a design which prevents oscillation is
+   the key point. 
+ </t>
+<t> Hints for Implementation </t>
+<t>
+   Ephemeral configuration state nodes that are created or altered by
+   users that match a rule carrying i2rs-priority will have those nodes
+   annotated with metadata.  Additionally, during commit processing, if
+   nodes are found where i2rs-priority is already present, and the
+   priority is better than the transaction's user's priority for that
+   node, the commit should fail.  An appropriate error should be returned
+   to the user stating the nodes where the user had insufficient
+   priority to override the state.
+</t>
+ </section>
+  <section title="Transactions">
+ <t> Ephemeral-REQ-13: Section 7.9 of the <xref target="I-D.ietf-i2rs-architecture"></xref>
+ states the I2RS architecture does not include
+ multi-message atomicity and roll-back mechanisms.  I2RS notes 
+multiple operations in one or more messages handling can 
+handle errors within the set of operations in many ways. 
+No multi-message commands SHOULD cause errors to be 
+inserted into the I2RS ephemeral data-store. 
+</t>
+<t>
+Explanation: 
+</t>
+<t>
+I2RS suggests the following are some of the potential error handling techniques
+for multiple  message sent to the I2RS client:
+ <list style="numbers">
+ <t>Perform all or none: All operations succeed or none of them will be applied. 
+   This useful when there are mutual dependencies.</t>
+ <t>Perform until error: Operations are applied in order, and when error occurs
+   the processing stops. This is useful when dependencies exist between
+   multiple-message operations, and order is important.</t>
+  <t>Perform all storing errors: Perform all actions storing error indications
+    for errors.  This method can be used when there are no dependencies  
+    between operations, and the client wants to sort it out.</t>
+ </list> 
+ </t>
+<t>Is important to reliability of the datastore that none of these error handling for
+multiple operations in one more multiple messages cause errors into be insert the I2RS ephemeral data-store. 
+</t>
+<t>
+</t>
+<t>Discussion of Current NETCONF/RESTCONF versus </t>
+<t>RESTCONF does an atomic action within a http session, 
+and NETCONF has atomic actions within a commit. 
+These features may be used to perform these features.</t>
+<t> I2RS processing is dependent on the I2RS model. The I2RS model must consider 
+the dependencies within multiple operations work within a model.  
+</t>
+ </section>
+ <section title="Subscriptions to Changed State Requirements">
+ <t>
+    I2RS clients require the ability to monitor changes to ephemeral
+   state.  While subscriptions are well defined for receiving
+   notifications, the need to create a notification set for all
+   ephemeral configuration state may be overly burdensome to the user.
+   </t>
+   <t>
+   There is thus a need for a general subscription mechanism that can
+   provide notification of changed state, with sufficient information to
+   permit the client to retrieve the impacted nodes.  This should be
+   doable without requiring the notifications to be created as part of
+   every single I2RS module. 
+</t>
+<t>The following requirements from the 
+<xref target="I-D.ietf-i2rs-pub-sub-requirements"></xref> apply to ephemeral 
+   state: 
+   <list style="symbols">
+   <t>PubSub-REQ-1: The I2RS interface SHOULD support user subscriptions to data
+   with the following parameters: push of data synchronously or 
+   asynchronously via registered subscriptions.
+   </t>
+   <t>PubSSub-REQ-2: Real time for notifications SHOULD be defined by the data models.
+   </t>
+   <t>PubSub-REQ-3: Security of the pub/sub data stream SHOULD be able to be
+   model dependent.</t>
+   <t>PubSub-REQ-4: The Pub/Sub mechanism SHOULD allow subscription to 
+   critical Node Events.  Examples of critical node events are BGP
+   peers down or ISIS protocol overload bits.</t>
+   <t>PubSub-REQ-5:I2RS telemetry data for certain protocols (E.g. BGP) 
+   will require a hierarchy of filters or XPATHs.  
+   The I2RS protocol design MUST balance security against the 
+   throughput of the telemetry data. </t>
+   <t>PubSub-REQ-6: I2RS Filters SHOULD be able to be dynamic. </t>
+   <t>Pub-Sub-REQ-7: I2rs protocol MUST be able to allow I2RS agent
+   to set limits on the data models it will support for pub/sub and
+   within data models to support knobs for maximum frequency or resolution of pub/sub data.   </t>
+  </list></t>
+ </section>
+ </section> 
+ </section>
+<section title=" Previously Considered Ideas">
+ <section title="A Separate Ephemeral Datastore">
+ <t>
+ The primary advantage of a fully separate datastore is that the
+   semantics of its contents are always clearly ephemeral.  It also
+   provides strong segregation of I2RS configuration and operational
+   state from the rest of the system within the network element.
+ </t>
+ <t>
+    The most obvious disadvantage of such a fully separate datastore is
+   that interaction with the network element's operational or
+   configuration state becomes significantly more difficult.  As an
+   example, a BGP I2RS use case would be the dynamic instantiation of a
+   BGP peer.  While it is readily possible to re-use any defined
+   groupings from an IETF-standardized BGP module in such an I2RS
+   ephemeral datastore's modules, one cannot currently reference state
+   from one datastore to anothe
+ </t>
+ <t>
+    For example, XPath queries are done in the context document of the
+   datastore in question and thus it is impossible for an I2RS model to
+   fulfil a "must" or "when" requirement in the BGP module in the
+   standard data stores.  To implement such a mechanism would require
+   appropriate semantics for XPath.
+ </t>
+ </section>
+ <section title=" Panes of Glass/Overlay">
+ <t>   I2RS ephemeral configuration state is generally expected to be
+   disjoint from persistent configuration.  In some cases, extending
+   persistent configuration with ephemeral attributes is expected to be
+   useful.  A case that is considered potentially useful but problematic
+   was explored was the ability to "overlay" persistent configuration
+   with ephemeral configuration.
+ </t>
+ <t>   In this overlay scenario, persistent configuration that was not
+   shadowed by ephemeral configuration could be "read through".
+ </t>
+ <t>   There were two perceived disadvantages to this mechanism:
+ <list>
+ <t>The general complexity with managing the overlay mechanism
+       itself.</t>
+ <t>Consistency issues with validation should the ephemeral state be
+       lost, perhaps on reboot.  In such a case, the previously shadowed
+       persistent state may no longer validate.
+</t>
+ </list>
+ </t>
+ </section>
+ </section>
+<section anchor="IANA" title="IANA Considerations">
+      <t>There are no IANA requirements for this document.</t>
+    </section>
+ <section title="Security Considerations">
+      <t>The security requirements for the I2RS protocol are 
+	  covered in <xref target="I-D.hares-i2rs-auth-trans"></xref> document.
+	  </t>
+    </section>
+<section anchor="Acknowledgements" title="Acknowledgements">
+	<t>
+	    This document is an attempt to distill lengthy conversations on
+	    the I2RS mailing list for an architecture that was for a long
+	    period of time a moving target.  Some individuals in particular
+	    warrant specific mention for their extensive help in providing
+	    the basis for this document:
+	</t>
+	<t>
+	    <list style="symbols">
+		<t>Alia Atlas</t>
+		<t>Andy Bierman</t>
+		<t>Martin Bjorklund</t>
+		<t>Dean Bogdanavich</t>
+		<t>Rex Fernando</t>
+		<t>Joel Halpern</t>
+		<t>Thomas Nadeau</t>
+		<t>Juergen Schoenwaelder</t>
+		<t>Kent Watsen</t>
+	    </list>
+	</t>
+</section>
+</middle>
+  <back>
+    <references title="Normative References:">
+	 &I-D.ietf-i2rs-architecture;
+     &I-D.ietf-i2rs-rib-info-model;
+	 &I-D.ietf-i2rs-traceability;
+	 &I-D.ietf-i2rs-pub-sub-requirements;
+	 &I-D.ietf-netmod-yang-metadata;
+	 &I-D.hares-i2rs-auth-trans;
+	</references>
+    <references title="Informative References">
+      &RFC2119;
+	  &RFC6020;
+	  &RFC6241;
+	  &RFC6536;
+	  &I-D.ietf-netconf-restconf;
+    </references>
+  </back>
+</rfc>
